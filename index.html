@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BamboWorld — Магазин</title>
+    <title>BamboWorld — Донат</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
         * {
@@ -21,178 +21,31 @@
             justify-content: center;
         }
 
-        .shop-section {
+        .donate-card {
+            background: rgba(18, 26, 20, 0.85);
+            border: 1px solid rgba(16, 185, 129, 0.25);
+            border-radius: 20px;
+            padding: 30px;
             width: 100%;
-            max-width: 1100px;
+            max-width: 550px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
         }
 
-        /* Навигация / Табы */
-        .shop-nav {
-            display: flex;
-            gap: 12px;
-            margin-bottom: 30px;
-            justify-content: center;
-        }
-
-        .nav-btn {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            color: #a0a0a0;
-            padding: 14px 28px;
-            border-radius: 12px;
-            font-size: 16px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.25s ease;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .nav-btn:hover {
-            background: rgba(46, 204, 113, 0.1);
-            border-color: rgba(46, 204, 113, 0.3);
-            color: #fff;
-        }
-
-        .nav-btn.active {
-            background: #10b981;
-            border-color: #10b981;
-            color: #000;
-            box-shadow: 0 0 20px rgba(16, 185, 129, 0.4);
-        }
-
-        .tab-content {
-            display: none;
-        }
-
-        .tab-content.active {
-            display: block;
-        }
-
-        /* Заголовки блоков */
         .block-title {
             font-size: 24px;
             font-weight: 800;
             text-transform: uppercase;
-            margin-bottom: 8px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
+            text-align: center;
+            color: #fff;
+            margin-bottom: 6px;
         }
 
         .block-subtitle {
             color: #71717a;
             font-size: 14px;
-            margin-bottom: 25px;
-        }
-
-        /* Карточки Привилегий */
-        .ranks-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-            gap: 20px;
-        }
-
-        .rank-card {
-            background: rgba(18, 26, 20, 0.7);
-            border: 1px solid rgba(16, 185, 129, 0.2);
-            border-radius: 16px;
-            padding: 24px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            position: relative;
-            backdrop-filter: blur(10px);
-            transition: transform 0.2s ease, border-color 0.2s ease;
-        }
-
-        .rank-card:hover {
-            transform: translateY(-5px);
-            border-color: #10b981;
-            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.15);
-        }
-
-        .rank-name {
-            font-size: 22px;
-            font-weight: 800;
-            color: #10b981;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 12px;
-        }
-
-        .rank-features {
-            list-style: none;
-            margin-bottom: 20px;
-        }
-
-        .rank-features li {
-            font-size: 14px;
-            color: #a1a1aa;
-            margin-bottom: 8px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .rank-features li::before {
-            content: "✔";
-            color: #10b981;
-            font-weight: bold;
-        }
-
-        .rank-price-box {
-            display: flex;
-            align-items: baseline;
-            justify-content: space-between;
-            margin-bottom: 15px;
-            padding-top: 15px;
-            border-top: 1px solid rgba(255, 255, 255, 0.08);
-        }
-
-        .price-val {
-            font-size: 26px;
-            font-weight: 800;
-            color: #fff;
-        }
-
-        .price-currency {
-            font-size: 14px;
-            color: #10b981;
-            font-weight: 700;
-        }
-
-        .btn-buy {
-            display: block;
-            width: 100%;
-            padding: 12px;
-            background: #10b981;
-            color: #000;
             text-align: center;
-            text-decoration: none;
-            font-weight: 800;
-            border-radius: 10px;
-            font-size: 15px;
-            border: none;
-            cursor: pointer;
-            transition: background 0.2s ease, box-shadow 0.2s ease;
-        }
-
-        .btn-buy:hover {
-            background: #34d399;
-            box-shadow: 0 0 15px rgba(16, 185, 129, 0.4);
-        }
-
-        /* Блок Пополнения Валюты */
-        .currency-card {
-            background: rgba(18, 26, 20, 0.7);
-            border: 1px solid rgba(16, 185, 129, 0.2);
-            border-radius: 20px;
-            padding: 30px;
-            max-width: 550px;
-            margin: 0 auto;
-            backdrop-filter: blur(10px);
+            margin-bottom: 25px;
         }
 
         .form-group {
@@ -209,10 +62,10 @@
             margin-bottom: 8px;
         }
 
-        .form-input {
+        .form-input, .form-select {
             width: 100%;
             padding: 14px 16px;
-            background: rgba(0, 0, 0, 0.4);
+            background: rgba(0, 0, 0, 0.5);
             border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 10px;
             color: #fff;
@@ -221,13 +74,46 @@
             transition: border-color 0.2s;
         }
 
-        .form-input:focus {
+        .form-input:focus, .form-select:focus {
             border-color: #10b981;
+        }
+
+        .form-select option {
+            background: #121a14;
+            color: #fff;
+        }
+
+        /* Перемикач типом покупки */
+        .type-selector {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .type-btn {
+            flex: 1;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #a0a0a0;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+            transition: 0.2s;
+            text-align: center;
+        }
+
+        .type-btn.active {
+            background: #10b981;
+            border-color: #10b981;
+            color: #000;
+            box-shadow: 0 0 15px rgba(16, 185, 129, 0.3);
         }
 
         .preset-buttons {
             display: flex;
-            gap: 10px;
+            gap: 8px;
             margin-top: 10px;
         }
 
@@ -267,161 +153,127 @@
             font-weight: 800;
             color: #10b981;
         }
+
+        .btn-buy {
+            display: block;
+            width: 100%;
+            padding: 16px;
+            background: #10b981;
+            color: #000;
+            text-align: center;
+            text-decoration: none;
+            font-weight: 800;
+            border-radius: 10px;
+            font-size: 17px;
+            border: none;
+            cursor: pointer;
+            transition: background 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .btn-buy:hover {
+            background: #34d399;
+            box-shadow: 0 0 20px rgba(16, 185, 129, 0.4);
+        }
     </style>
 </head>
 <body>
 
-<section class="shop-section">
-    <!-- Переключатель вкладок -->
-    <div class="shop-nav">
-        <button class="nav-btn active" onclick="switchTab('ranks')">👑 ПРИВИЛЕГИИ</button>
-        <button class="nav-btn" onclick="switchTab('currency')">🎋 ВАЛЮТА БАМБУК</button>
+<div class="donate-card">
+    <div class="block-title">💳 ПОПОВНЕННЯ ТА ДОНАТ</div>
+    <div class="block-subtitle">Вкажи свій нікнейм та обери товар для покупки</div>
+
+    <!-- Перемикач типу: Привілегія або Бамбук -->
+    <div class="type-selector">
+        <button class="type-btn active" id="btn-rank" onclick="selectType('rank')">👑 ПРИВІЛЕГІЇ</button>
+        <button class="type-btn" id="btn-currency" onclick="selectType('currency')">🎋 ВАЛЮТА БАМБУК</button>
     </div>
 
-    <!-- Вкладка 1: ПРИВИЛЕГИИ -->
-    <div id="ranks" class="tab-content active">
-        <div class="block-title">⚡ ИГРОВЫЕ РАНГИ</div>
-        <div class="block-subtitle">Выберите привилегию для получения уникальных возможностей на сервере</div>
+    <!-- Поле введення ніку -->
+    <div class="form-group">
+        <label class="form-label">Ігровий нікнейм</label>
+        <input type="text" id="player-nick" class="form-input" placeholder="Введи свій нік...">
+    </div>
 
-        <div class="ranks-grid">
-            <!-- PREMIUM -->
-            <div class="rank-card">
-                <div>
-                    <div class="rank-name">PREMIUM</div>
-                    <ul class="rank-features">
-                        <li>Набор /kit premium</li>
-                        <li>Доступ к /fly</li>
-                        <li>3 точки дома (/sethome)</li>
-                    </ul>
-                </div>
-                <div>
-                    <div class="rank-price-box">
-                        <span class="price-val">50</span>
-                        <span class="price-currency">ГРН</span>
-                    </div>
-                    <a href="https://minepay.store/bamboworld" target="_blank" class="btn-buy">КУПИТЬ</a>
-                </div>
-            </div>
+    <!-- Блок вибору привілегій -->
+    <div id="ranks-section" class="form-group">
+        <label class="form-label">Обери привілегію</label>
+        <select id="rank-select" class="form-select" onchange="updatePrice()">
+            <option value="50">PREMIUM — 50 ГРН</option>
+            <option value="100">BAMBOO — 100 ГРН</option>
+            <option value="150">SUMMER — 150 ГРН</option>
+            <option value="200">BILDER — 200 ГРН</option>
+        </select>
+    </div>
 
-            <!-- BAMBOO -->
-            <div class="rank-card">
-                <div>
-                    <div class="rank-name">BAMBOO</div>
-                    <ul class="rank-features">
-                        <li>Все возможности Premium</li>
-                        <li>Набор /kit bamboo</li>
-                        <li>Доступ к /heal и /feed</li>
-                    </ul>
-                </div>
-                <div>
-                    <div class="rank-price-box">
-                        <span class="price-val">100</span>
-                        <span class="price-currency">ГРН</span>
-                    </div>
-                    <a href="https://minepay.store/bamboworld" target="_blank" class="btn-buy">КУПИТЬ</a>
-                </div>
-            </div>
-
-            <!-- SUMMER -->
-            <div class="rank-card">
-                <div>
-                    <div class="rank-name">SUMMER</div>
-                    <ul class="rank-features">
-                        <li>Уникальный статус в чате</li>
-                        <li>Набор /kit summer</li>
-                        <li>10 точек дома</li>
-                    </ul>
-                </div>
-                <div>
-                    <div class="rank-price-box">
-                        <span class="price-val">150</span>
-                        <span class="price-currency">ГРН</span>
-                    </div>
-                    <a href="https://minepay.store/bamboworld" target="_blank" class="btn-buy">КУПИТЬ</a>
-                </div>
-            </div>
-
-            <!-- BILDER -->
-            <div class="rank-card">
-                <div>
-                    <div class="rank-name">BILDER</div>
-                    <ul class="rank-features">
-                        <li>Доступ к креатив-командам</li>
-                        <li>Эксклюзивный суффикс</li>
-                        <li>Приоритет при входе</li>
-                    </ul>
-                </div>
-                <div>
-                    <div class="rank-price-box">
-                        <span class="price-val">200</span>
-                        <span class="price-currency">ГРН</span>
-                    </div>
-                    <a href="https://minepay.store/bamboworld" target="_blank" class="btn-buy">КУПИТЬ</a>
-                </div>
-            </div>
+    <!-- Блок вибору валюти Бамбук (захований за замовчуванням) -->
+    <div id="currency-section" class="form-group" style="display: none;">
+        <label class="form-label">Кількість Бамбука</label>
+        <input type="number" id="bamboo-count" class="form-input" value="50" min="1" oninput="updatePrice()">
+        
+        <div class="preset-buttons">
+            <button class="preset-btn" onclick="setAmount(10)">10</button>
+            <button class="preset-btn" onclick="setAmount(50)">50</button>
+            <button class="preset-btn" onclick="setAmount(100)">100</button>
+            <button class="preset-btn" onclick="setAmount(250)">250</button>
+            <button class="preset-btn" onclick="setAmount(500)">500</button>
         </div>
     </div>
 
-    <!-- Вкладка 2: ВАЛЮТА БАМБУК -->
-    <div id="currency" class="tab-content">
-        <div class="currency-card">
-            <div class="block-title" style="justify-content: center;">🎋 ПОПОЛНЕНИЕ БАМБУКА</div>
-            <div class="block-subtitle" style="text-align: center;">Укажите ник и количество игровой валюты для покупки</div>
-
-            <div class="form-group">
-                <label class="form-label">Игровой никнейм</label>
-                <input type="text" id="player-nick" class="form-input" placeholder="Например: bamtyt_">
-            </div>
-
-            <div class="form-group">
-                <label class="form-label">Количество Бамбука</label>
-                <input type="number" id="bamboo-count" class="form-input" value="50" min="1" oninput="calculatePrice()">
-                
-                <div class="preset-buttons">
-                    <button class="preset-btn" onclick="setAmount(10)">10</button>
-                    <button class="preset-btn" onclick="setAmount(50)">50</button>
-                    <button class="preset-btn" onclick="setAmount(100)">100</button>
-                    <button class="preset-btn" onclick="setAmount(250)">250</button>
-                    <button class="preset-btn" onclick="setAmount(500)">500</button>
-                </div>
-            </div>
-
-            <div class="total-box">
-                <span class="total-label">К оплате:</span>
-                <div>
-                    <span id="final-price" class="total-amount">50</span>
-                    <span style="color: #10b981; font-weight: 800;">ГРН</span>
-                </div>
-            </div>
-
-            <a href="https://minepay.store/bamboworld" target="_blank" class="btn-buy" style="padding: 16px; font-size: 17px;">
-                ⚡ ПЕРЕЙТИ К ОПЛАТЕ
-            </a>
+    <!-- Підсумок ціни -->
+    <div class="total-box">
+        <span class="total-label">До сплати:</span>
+        <div>
+            <span id="final-price" class="total-amount">50</span>
+            <span style="color: #10b981; font-weight: 800;">ГРН</span>
         </div>
     </div>
-</section>
+
+    <!-- Кнопка перехода на MinePay -->
+    <a href="https://minepay.store/bamboworld" target="_blank" class="btn-buy">
+        ⚡ ПЕРЕЙТИ ДО ОПЛАТИ
+    </a>
+</div>
 
 <script>
-    function switchTab(tabId) {
-        document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
-        document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+    let currentType = 'rank';
 
-        document.getElementById(tabId).classList.add('active');
-        event.currentTarget.classList.add('active');
+    function selectType(type) {
+        currentType = type;
+        const rankBtn = document.getElementById('btn-rank');
+        const currBtn = document.getElementById('btn-currency');
+        const rankSec = document.getElementById('ranks-section');
+        const currSec = document.getElementById('currency-section');
+
+        if (type === 'rank') {
+            rankBtn.classList.add('active');
+            currBtn.classList.remove('active');
+            rankSec.style.display = 'block';
+            currSec.style.display = 'none';
+        } else {
+            currBtn.classList.add('active');
+            rankBtn.classList.remove('active');
+            rankSec.style.display = 'none';
+            currSec.style.display = 'block';
+        }
+        updatePrice();
     }
 
-    function calculatePrice() {
-        const input = document.getElementById('bamboo-count');
+    function updatePrice() {
         const priceDisplay = document.getElementById('final-price');
-        let val = parseInt(input.value) || 0;
-        
-        if (val < 0) val = 0;
-        priceDisplay.innerText = val;
+        if (currentType === 'rank') {
+            const rankSelect = document.getElementById('rank-select');
+            priceDisplay.innerText = rankSelect.value;
+        } else {
+            const input = document.getElementById('bamboo-count');
+            let val = parseInt(input.value) || 0;
+            if (val < 0) val = 0;
+            priceDisplay.innerText = val;
+        }
     }
 
     function setAmount(amount) {
         document.getElementById('bamboo-count').value = amount;
-        calculatePrice();
+        updatePrice();
     }
 </script>
 
