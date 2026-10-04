@@ -1,1019 +1,543 @@
 <!DOCTYPE html>
-<html lang="uk" class="dark">
+<html lang="uk">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BamboWorld — Авто-донат серверу Minecraft</title>
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- FontAwesome Icons -->
+    <title>BamboWorld - Магазин</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Google Fonts Inter & Orbitron -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Orbitron:wght@600;800;900&display=swap" rel="stylesheet">
-
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    colors: {
-                        bamboo: {
-                            50: '#f0fdf4',
-                            100: '#dcfce7',
-                            400: '#4ade80',
-                            500: '#22c55e',
-                            600: '#16a34a',
-                            700: '#15803d',
-                            900: '#14532d',
-                            950: '#052e16',
-                        },
-                        darkbg: '#0a0e14',
-                        cardbg: '#111823',
-                        accentgold: '#f59e0b',
-                    },
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                        display: ['Orbitron', 'sans-serif'],
-                    }
-                }
-            }
-        }
-    </script>
-
     <style>
+        :root {
+            --bg-dark: #0d0f12;
+            --bg-card: rgba(22, 26, 33, 0.85);
+            --accent-green: #2ecc71;
+            --accent-green-hover: #27ae60;
+            --text-main: #ffffff;
+            --text-muted: #a0aab8;
+            --border-color: rgba(255, 255, 255, 0.08);
+            --card-glow: rgba(46, 204, 113, 0.15);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Montserrat', sans-serif;
+            user-select: none;
+        }
+
         body {
-            background-color: #0a0e14;
-            color: #f3f4f6;
-            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
             overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(46, 204, 113, 0.05) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(46, 204, 113, 0.05) 0%, transparent 40%);
         }
 
-        #bgCanvas {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            z-index: 0;
-            pointer-events: none;
+        header {
+            width: 100%;
+            max-width: 1200px;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
-        .glass-panel {
-            background: rgba(17, 24, 35, 0.75);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
+        .logo {
+            font-size: 24px;
+            font-weight: 900;
+            color: var(--text-main);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
-        .glass-panel-hover {
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        .logo span {
+            color: var(--accent-green);
         }
 
-        .glass-panel-hover:hover {
-            transform: translateY(-6px);
-            border-color: rgba(34, 197, 94, 0.4);
-            box-shadow: 0 12px 30px -10px rgba(34, 197, 94, 0.25);
+        .lang-switch {
+            display: flex;
+            gap: 10px;
+            background: var(--bg-card);
+            padding: 6px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
         }
 
-        .glow-green {
-            box-shadow: 0 0 25px -5px rgba(34, 197, 94, 0.4);
+        .lang-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            padding: 6px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 700;
+            transition: all 0.3s ease;
         }
 
-        .glow-gold {
-            box-shadow: 0 0 25px -5px rgba(245, 158, 11, 0.4);
+        .lang-btn.active {
+            background: var(--accent-green);
+            color: #000;
         }
 
-        .text-glow-green {
-            text-shadow: 0 0 12px rgba(34, 197, 94, 0.6);
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            padding: 20px;
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
         }
 
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #0a0e14;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #1f293d;
-            border-radius: 4px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #22c55e;
-        }
-
-        /* Modal animation */
-        @keyframes modalFadeIn {
-            from { opacity: 0; transform: scale(0.95) translateY(10px); }
-            to { opacity: 1; transform: scale(1) translateY(0); }
-        }
-        .animate-modal {
-            animation: modalFadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-        }
-
-        /* Pulse badge */
-        .online-ping {
-            animation: ping 1.5s cubic-bezier(0, 0, 0.2, 1) infinite;
-        }
-        @keyframes ping {
-            75%, 100% {
-                transform: scale(2);
-                opacity: 0;
+        @media (max-width: 900px) {
+            .container {
+                grid-template-columns: 1fr;
             }
+        }
+
+        /* Перемикач вкладок (Привілегії / Валюта) */
+        .tabs-container {
+            grid-column: 1 / -1;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 10px;
+        }
+
+        .tab-btn {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            color: var(--text-muted);
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .tab-btn.active {
+            background: var(--accent-green);
+            color: #000;
+            border-color: var(--accent-green);
+            box-shadow: 0 0 15px var(--card-glow);
+        }
+
+        .roles-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 20px;
+        }
+
+        .role-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: blur(10px);
+        }
+
+        .role-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent-green);
+            box-shadow: 0 10px 20px var(--card-glow);
+        }
+
+        .role-card.selected {
+            border-color: var(--accent-green);
+            background: rgba(46, 204, 113, 0.08);
+            box-shadow: 0 0 25px var(--card-glow);
+        }
+
+        .role-icon {
+            font-size: 36px;
+            margin-bottom: 15px;
+            color: var(--accent-green);
+        }
+
+        .role-title {
+            font-size: 20px;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+
+        .role-price {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--accent-green);
+        }
+
+        /* Панель купівлі валюти */
+        .coins-panel {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 30px;
+            display: none;
+            flex-direction: column;
+            gap: 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        .coins-panel.active {
+            display: flex;
+        }
+
+        .checkout-panel {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            height: fit-content;
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 20px;
+        }
+
+        .checkout-title {
+            font-size: 20px;
+            font-weight: 800;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 15px;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .input-group label {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+
+        .input-group input {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 14px;
+            color: var(--text-main);
+            font-size: 15px;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .input-group input:focus {
+            border-color: var(--accent-green);
+        }
+
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            font-size: 15px;
+            color: var(--text-muted);
+        }
+
+        .summary-item.total {
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--text-main);
+            border-top: 1px solid var(--border-color);
+            padding-top: 15px;
+        }
+
+        .summary-item.total span:last-child {
+            color: var(--accent-green);
+        }
+
+        .pay-btn {
+            background: var(--accent-green);
+            color: #000;
+            border: none;
+            border-radius: 12px;
+            padding: 16px;
+            font-size: 16px;
+            font-weight: 800;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .pay-btn:hover {
+            background: var(--accent-green-hover);
+            transform: scale(1.02);
+        }
+
+        .toast-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 1000;
+        }
+
+        .toast {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-left: 4px solid var(--accent-green);
+            padding: 15px 20px;
+            border-radius: 10px;
+            color: var(--text-main);
+            font-weight: 600;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+            animation: slideIn 0.3s ease forwards;
+        }
+
+        .toast.error {
+            border-left-color: #e74c3c;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
         }
     </style>
 </head>
-<body class="relative min-h-screen flex flex-col justify-between selection:bg-bamboo-500 selection:text-white">
+<body>
 
-    <!-- Interactive Canvas Background -->
-    <canvas id="bgCanvas"></canvas>
+    <header>
+        <div class="logo">
+            <i class="fa-solid fa-cubes"></i> BAMBO<span>WORLD</span>
+        </div>
+        <div class="lang-switch">
+            <button class="lang-btn active" onclick="setLanguage('uk')">UA</button>
+            <button class="lang-btn" onclick="setLanguage('en')">EN</button>
+        </div>
+    </header>
 
-    <!-- Toast Notification Container -->
-    <div id="toastContainer" class="fixed top-20 right-5 z-50 flex flex-col gap-3 pointer-events-none"></div>
-
-    <div class="relative z-10 flex flex-col min-h-screen">
-        
-        <header class="sticky top-0 z-40 w-full glass-panel border-b border-white/10">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
-                
-                <!-- Logo -->
-                <a href="#" onclick="playAudio('click');" class="flex items-center gap-3 group">
-                    <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-bamboo-500 to-emerald-700 flex items-center justify-center shadow-lg group-hover:scale-105 transition-transform">
-                        <i class="fa-solid fa-tree text-2xl text-white"></i>
-                    </div>
-                    <div>
-                        <span class="font-display font-black text-2xl tracking-wider text-white flex items-center gap-1">
-                            BAMBO<span class="text-bamboo-400">WORLD</span>
-                        </span>
-                        <span class="text-xs text-gray-400 tracking-widest uppercase block -mt-1 font-semibold" data-i18n="tagline">MINECRAFT SERVER</span>
-                    </div>
-                </a>
-
-                <!-- Header Actions -->
-                <div class="flex items-center gap-3 sm:gap-4">
-                    
-                    <!-- Sound Toggle -->
-                    <button id="soundToggleBtn" onclick="toggleSound();" class="p-2.5 rounded-xl bg-gray-800/80 hover:bg-gray-700 text-gray-300 hover:text-white transition-all border border-white/5 flex items-center justify-center" title="Звукові ефекти">
-                        <i id="soundIcon" class="fa-solid fa-volume-high text-lg text-bamboo-400"></i>
-                    </button>
-
-                    <!-- Discord Link -->
-                    <a href="https://discord.gg/yBZRPWv4jM" target="_blank" onclick="playAudio('click');" class="hidden sm:flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#5865F2]/20 hover:bg-[#5865F2] text-[#5865F2] hover:text-white border border-[#5865F2]/40 font-medium text-sm transition-all duration-300">
-                        <i class="fa-brands fa-discord text-lg"></i>
-                        <span data-i18n="discordBtn">Discord</span>
-                    </a>
-
-                    <!-- Language Switcher -->
-                    <div class="flex items-center bg-gray-800/90 rounded-xl p-1 border border-white/10">
-                        <button id="langUA" onclick="setLanguage('ua');" class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all bg-bamboo-500 text-white shadow">
-                            UA 🇺🇦
-                        </button>
-                        <button id="langRU" onclick="setLanguage('ru');" class="px-3 py-1.5 rounded-lg text-xs font-bold text-gray-400 hover:text-white transition-all">
-                            RU 🌐
-                        </button>
-                    </div>
-
-                </div>
-            </div>
-        </header>
-
-        <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-12">
-
-            <section class="relative rounded-3xl overflow-hidden glass-panel p-6 sm:p-10 border border-bamboo-500/20 glow-green">
-                <div class="absolute -right-20 -bottom-20 w-80 h-80 bg-bamboo-500/10 rounded-full blur-3xl pointer-events-none"></div>
-                <div class="absolute -left-20 -top-20 w-80 h-80 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
-
-                <div class="relative z-10 flex flex-col md:flex-row items-center justify-between gap-8">
-                    
-                    <div class="space-y-4 text-center md:text-left max-w-2xl">
-                        <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-bamboo-500/10 border border-bamboo-500/30 text-bamboo-400 text-xs font-bold uppercase tracking-wider">
-                            <span class="relative flex h-2 w-2">
-                              <span class="online-ping absolute inline-flex h-full w-full rounded-full bg-bamboo-400 opacity-75"></span>
-                              <span class="relative inline-flex rounded-full h-2 w-2 bg-bamboo-500"></span>
-                            </span>
-                            <span data-i18n="serverStatusOnline">СЕРВЕР ПРАЦЮЄ • ВЕРСІЯ 1.16.5 - 1.20.x</span>
-                        </div>
-
-                        <h1 class="text-3xl sm:text-5xl font-black font-display text-white leading-tight">
-                            <span data-i18n="heroTitle1">ОТРИМАЙ МАКСИМУМ ВІД ГРИ НА</span> <br/>
-                            <span class="text-transparent bg-clip-text bg-gradient-to-r from-bamboo-400 via-emerald-300 to-green-500 text-glow-green">BAMBOWORLD</span>
-                        </h1>
-
-                        <p class="text-gray-300 text-sm sm:text-base leading-relaxed" data-i18n="heroDesc">
-                            Унікальний сервер з унікальною атмосферою, збалансованою економікою, викликами та дружнім ком'юніті. Обирай привілегію та підкорюй світ вже зараз!
-                        </p>
-
-                        <div class="pt-2 flex flex-wrap gap-4 justify-center md:justify-start">
-                            <a href="#store" onclick="playAudio('click');" class="px-6 py-3.5 rounded-xl bg-gradient-to-r from-bamboo-500 to-emerald-600 text-white font-bold text-sm shadow-lg shadow-bamboo-500/30 hover:shadow-bamboo-500/50 hover:scale-105 active:scale-95 transition-all flex items-center gap-2">
-                                <i class="fa-solid fa-cart-shopping"></i>
-                                <span data-i18n="heroBuyBtn">Обрати донат</span>
-                            </a>
-                            <a href="https://discord.gg/yBZRPWv4jM" target="_blank" onclick="playAudio('click');" class="px-6 py-3.5 rounded-xl bg-gray-800 hover:bg-gray-700 text-gray-200 border border-white/10 font-bold text-sm hover:scale-105 active:scale-95 transition-all flex items-center gap-2">
-                                <i class="fa-brands fa-discord text-lg text-[#5865F2]"></i>
-                                <span data-i18n="heroDiscordBtn">Наш Discord</span>
-                            </a>
-                        </div>
-                    </div>
-
-                    <!-- Copy IP Card -->
-                    <div class="w-full md:w-auto flex-shrink-0">
-                        <div class="glass-panel p-6 rounded-2xl border border-white/10 flex flex-col items-center text-center space-y-4 max-w-xs mx-auto">
-                            <div class="w-16 h-16 rounded-2xl bg-bamboo-500/20 border border-bamboo-500/40 flex items-center justify-center text-bamboo-400 text-2xl">
-                                <i class="fa-solid fa-server"></i>
-                            </div>
-                            <div>
-                                <div class="text-xs text-gray-400 font-semibold uppercase tracking-wider" data-i18n="ipTitle">АДРЕСА ДЛЯ ПІДКЛЮЧЕННЯ</div>
-                                <div class="font-mono text-base font-bold text-white mt-1 select-all bg-black/40 px-3 py-1.5 rounded-lg border border-white/5">
-                                    tex.ravenhost.space:18510
-                                </div>
-                            </div>
-                            <button onclick="copyServerIP();" class="w-full py-2.5 px-4 rounded-xl bg-bamboo-500/20 hover:bg-bamboo-500 text-bamboo-400 hover:text-white border border-bamboo-500/40 font-bold text-xs uppercase tracking-wider transition-all duration-300 flex items-center justify-center gap-2 active:scale-95">
-                                <i class="fa-regular fa-copy"></i>
-                                <span data-i18n="copyIpBtn">СКОПІЮВАТИ IP</span>
-                            </button>
-                        </div>
-                    </div>
-
-                </div>
-            </section>
-
-            <section id="store" class="space-y-6">
-                <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-white/10 pb-4">
-                    <div>
-                        <h2 class="text-2xl sm:text-3xl font-black font-display text-white flex items-center gap-3">
-                            <i class="fa-solid fa-gem text-bamboo-400"></i>
-                            <span data-i18n="shopTitle">МАГАЗИН ПРИВІЛЕГІЙ</span>
-                        </h2>
-                        <p class="text-gray-400 text-sm mt-1" data-i18n="shopSubtitle">Обери свій статус та отримай унікальні можливості на сервері</p>
-                    </div>
-                    <div class="text-xs text-bamboo-400 font-semibold bg-bamboo-500/10 px-3 py-1.5 rounded-lg border border-bamboo-500/20 self-start md:self-auto flex items-center gap-2">
-                        <i class="fa-solid fa-bolt"></i>
-                        <span data-i18n="instantDelivery">МИТТЄВА АВТОВИДАЧА</span>
-                    </div>
-                </div>
-
-                <!-- Products Grid -->
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="productsGrid">
-                    <!-- Cards injected via JavaScript -->
-                </div>
-            </section>
-
-            <section class="glass-panel rounded-2xl p-6 border border-white/10 space-y-4">
-                <div class="flex items-center justify-between">
-                    <h3 class="text-lg font-bold text-white flex items-center gap-2">
-                        <i class="fa-solid fa-clock-rotate-left text-bamboo-400"></i>
-                        <span data-i18n="recentPurchasesTitle">ОСТАННІ Покупки</span>
-                    </h3>
-                    <span class="text-xs text-gray-400 flex items-center gap-1">
-                        <span class="w-2 h-2 rounded-full bg-bamboo-400 inline-block animate-pulse"></span>
-                        <span data-i18n="liveUpdates">Оновлюється в реальному часі</span>
-                    </span>
-                </div>
-
-                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4" id="recentPurchasesFeed">
-                    <!-- Dynamic recent purchases -->
-                </div>
-            </section>
-
-            <section class="space-y-6">
-                <div class="text-center max-w-xl mx-auto space-y-2">
-                    <h2 class="text-2xl sm:text-3xl font-black font-display text-white" data-i18n="faqTitle">ЧАСТІ ПИТАННЯ</h2>
-                    <p class="text-gray-400 text-sm" data-i18n="faqSubtitle">Відповіді на популярні питання гравців</p>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-4xl mx-auto" id="faqAccordion">
-                    <!-- Dynamic FAQ Items -->
-                </div>
-            </section>
-
-        </main>
-
-        <footer class="mt-auto glass-panel border-t border-white/10 py-8">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-6">
-                
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-xl bg-bamboo-500/20 flex items-center justify-center text-bamboo-400 font-bold">
-                        <i class="fa-solid fa-tree"></i>
-                    </div>
-                    <div>
-                        <div class="font-display font-bold text-white text-base">BamboWorld</div>
-                        <div class="text-xs text-gray-400" data-i18n="copyright">© 2026 BamboWorld. Всі права захищені.</div>
-                    </div>
-                </div>
-
-                <div class="flex items-center gap-6 text-sm text-gray-400">
-                    <a href="https://discord.gg/yBZRPWv4jM" target="_blank" onclick="playAudio('click');" class="hover:text-bamboo-400 transition-colors flex items-center gap-2">
-                        <i class="fa-brands fa-discord"></i> Discord
-                    </a>
-                    <span class="text-gray-700">•</span>
-                    <span class="text-xs text-gray-500" data-i18n="notMojang">Not affiliated with Mojang Studios</span>
-                </div>
-
-            </div>
-        </footer>
-
-    </div>
-
-    <!-- Checkout Modal -->
-    <div id="checkoutModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md hidden">
-        <div class="glass-panel w-full max-w-lg rounded-3xl border border-bamboo-500/30 shadow-2xl p-6 sm:p-8 relative animate-modal">
-            
-            <!-- Close Button -->
-            <button onclick="closeCheckoutModal();" class="absolute top-5 right-5 w-9 h-9 rounded-full bg-gray-800 hover:bg-gray-700 text-gray-400 hover:text-white flex items-center justify-center transition-all">
-                <i class="fa-solid fa-xmark text-lg"></i>
+    <div class="container">
+        <!-- Вкладки категорій -->
+        <div class="tabs-container">
+            <button class="tab-btn active" id="tabRanks" onclick="switchCategory('ranks')">
+                <i class="fa-solid fa-crown"></i> <span id="txtTabRanks">Привілегії</span>
             </button>
+            <button class="tab-btn" id="tabCoins" onclick="switchCategory('coins')">
+                <i class="fa-solid fa-coins"></i> <span id="txtTabCoins">Донат Монети</span>
+            </button>
+        </div>
 
-            <!-- Modal Header -->
-            <div class="flex items-center gap-4 border-b border-white/10 pb-5">
-                <div id="modalRoleIcon" class="w-14 h-14 rounded-2xl bg-bamboo-500/20 border border-bamboo-500/40 flex items-center justify-center text-bamboo-400 text-2xl font-bold">
-                    <i class="fa-solid fa-gem"></i>
-                </div>
-                <div>
-                    <span class="text-xs font-bold text-bamboo-400 uppercase tracking-wider" data-i18n="checkoutTitle">ОФОРМЛЕННЯ ПОКУПКИ</span>
-                    <h3 id="modalRoleName" class="text-2xl font-black font-display text-white">Role Name</h3>
-                </div>
+        <!-- Сітка Привілегій -->
+        <div class="roles-grid" id="rolesGrid"></div>
+
+        <!-- Панель Монет -->
+        <div class="coins-panel" id="coinsPanel">
+            <div class="input-group">
+                <label id="txtCoinsCountLabel">Кількість монет (1 монета = 1 ₴):</label>
+                <input type="number" id="coinsAmount" value="50" min="10" max="10000" oninput="updateCoinsCalculation()">
+            </div>
+            <div style="color: var(--text-muted); font-size: 14px;">
+                💡 Монети відразу після покупки зараховуються на ваш ігровий баланс.
+            </div>
+        </div>
+
+        <!-- Панель Оформлення -->
+        <div class="checkout-panel">
+            <div class="checkout-title" id="txtCheckoutTitle">Оформлення покупки</div>
+            
+            <div class="input-group">
+                <label id="txtNickLabel">Нікнейм у Minecraft</label>
+                <input type="text" id="playerNickname" placeholder="Введіть ваш нік..." autocomplete="off">
             </div>
 
-            <!-- Modal Form -->
-            <div class="mt-6 space-y-5">
-                
-                <!-- Nickname Input with MC-Heads Avatar Preview -->
-                <div>
-                    <label class="block text-xs font-bold uppercase tracking-wider text-gray-300 mb-2" data-i18n="nickLabel">
-                        ІГРОВИЙ НІКНЕЙМ
-                    </label>
-                    <div class="relative flex items-center">
-                        <div class="absolute left-3 w-10 h-10 rounded-lg overflow-hidden bg-gray-800 border border-white/10 flex items-center justify-center flex-shrink-0">
-                            <img id="avatarPreview" src="https://mc-heads.net/avatar/Steve/100" alt="Avatar" class="w-full h-full object-cover">
-                        </div>
-                        <input type="text" id="playerNickname" oninput="updateAvatarPreview(this.value);" placeholder="Наприклад: Steve" class="w-full pl-16 pr-4 py-3 bg-gray-900/90 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-bamboo-500 focus:ring-1 focus:ring-bamboo-500 font-medium text-sm transition-all">
-                    </div>
-                    <p class="text-[11px] text-gray-400 mt-1" data-i18n="nickHint">Вказуйте точно такий нік, під яким граєте на сервері</p>
-                </div>
-
-                <!-- Promo Code Input (NO HINT IN PLACEHOLDER) -->
-                <div>
-                    <label class="block text-xs font-bold uppercase tracking-wider text-gray-300 mb-2" data-i18n="promoLabel">
-                        ПРОМОКОД (ЗА НАЯВНОСТІ)
-                    </label>
-                    <div class="flex gap-2">
-                        <input type="text" id="promoInput" placeholder="Введіть промокод" class="w-full px-4 py-3 bg-gray-900/90 border border-white/10 rounded-xl text-white uppercase tracking-wider placeholder-gray-500 focus:outline-none focus:border-bamboo-500 font-mono text-sm transition-all">
-                        <button onclick="applyPromoCode();" class="px-5 py-3 rounded-xl bg-gray-800 hover:bg-gray-700 text-white font-bold text-xs uppercase tracking-wider border border-white/10 transition-all flex-shrink-0 active:scale-95" data-i18n="applyBtn">
-                            ЗАСТОСУВАТИ
-                        </button>
-                    </div>
-                    <div id="promoMessage" class="text-xs mt-1 hidden font-semibold"></div>
-                </div>
-
-                <!-- Payment Method Selector -->
-                <div>
-                    <label class="block text-xs font-bold uppercase tracking-wider text-gray-300 mb-2" data-i18n="paymentMethodLabel">
-                        СПОСІБ ОПЛАТИ
-                    </label>
-                    <div class="grid grid-cols-2 gap-3" id="paymentMethods">
-                        <button type="button" onclick="selectPaymentMethod('mono');" class="pay-method-btn active p-3 rounded-xl bg-gray-900 border border-bamboo-500 text-white flex items-center gap-3 text-xs font-bold transition-all">
-                            <i class="fa-solid fa-credit-card text-bamboo-400 text-base"></i>
-                            <span>Monobank</span>
-                        </button>
-                        <button type="button" onclick="selectPaymentMethod('privat');" class="pay-method-btn p-3 rounded-xl bg-gray-900 border border-white/10 text-gray-400 hover:text-white flex items-center gap-3 text-xs font-bold transition-all">
-                            <i class="fa-solid fa-building-columns text-base"></i>
-                            <span>Privat24</span>
-                        </button>
-                        <button type="button" onclick="selectPaymentMethod('card');" class="pay-method-btn p-3 rounded-xl bg-gray-900 border border-white/10 text-gray-400 hover:text-white flex items-center gap-3 text-xs font-bold transition-all">
-                            <i class="fa-brands fa-cc-visa text-base"></i>
-                            <span>Visa / MC</span>
-                        </button>
-                        <button type="button" onclick="selectPaymentMethod('crypto');" class="pay-method-btn p-3 rounded-xl bg-gray-900 border border-white/10 text-gray-400 hover:text-white flex items-center gap-3 text-xs font-bold transition-all">
-                            <i class="fa-brands fa-bitcoin text-base"></i>
-                            <span>Crypto / TON</span>
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Price Breakdown & Checkout Action -->
-                <div class="pt-4 border-t border-white/10 space-y-4">
-                    <div class="flex items-center justify-between">
-                        <span class="text-sm text-gray-400 font-medium" data-i18n="totalPay">До сплати:</span>
-                        <div class="text-right">
-                            <span id="oldPriceDisplay" class="text-xs text-gray-500 line-through mr-2"></span>
-                            <span id="finalPriceDisplay" class="text-2xl font-black font-display text-bamboo-400">150 ₽</span>
-                        </div>
-                    </div>
-
-                    <button onclick="processPayment();" class="w-full py-4 rounded-xl bg-gradient-to-r from-bamboo-500 to-emerald-600 text-white font-black font-display text-base tracking-wider shadow-lg shadow-bamboo-500/30 hover:shadow-bamboo-500/50 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2">
-                        <i class="fa-solid fa-lock text-sm"></i>
-                        <span data-i18n="payNowBtn">ПЕРЕЙТИ ДО ОПЛАТИ</span>
-                    </button>
-                </div>
-
+            <div class="summary-item">
+                <span id="txtSelectedRoleLabel">Товар:</span>
+                <span id="selectedRoleName">-</span>
             </div>
 
+            <div class="summary-item total">
+                <span id="txtTotalLabel">До сплати:</span>
+                <span id="selectedRolePrice">0 ₴</span>
+            </div>
+
+            <button class="pay-btn" onclick="processPayment()">
+                <i class="fa-solid fa-credit-card"></i> <span id="txtPayBtn">Оплатити</span>
+            </button>
         </div>
     </div>
 
-    <script>
-        // --- State Management ---
-        let currentLang = 'ua';
-        let soundEnabled = true;
-        let selectedRole = null;
-        let appliedDiscount = 0; // percentage
-        let activePaymentMethod = 'mono';
-        let audioCtx = null;
+    <div class="toast-container" id="toastContainer"></div>
 
-        // --- Donation Items Data ---
-        const donationItems = [
-            {
-                id: 'premium',
-                name: 'PREMIUM',
-                price: 150,
-                oldPrice: 250,
-                icon: 'fa-crown',
-                colorTheme: 'from-amber-500/20 to-amber-700/10 border-amber-500/40 text-amber-400',
-                btnBg: 'bg-amber-500 hover:bg-amber-600 text-black',
-                perks: {
-                    ua: ['Політ (/fly)', 'Одягнути блок на голову (/hat)', '5 точок дому (/sethome)', 'Набір /kit Premium', 'Збереження досвіду при смерті'],
-                    ru: ['Полет (/fly)', 'Надеть блок на голову (/hat)', '5 точек дома (/sethome)', 'Набор /kit Premium', 'Сохранение опыта при смерти']
-                }
-            },
-            {
-                id: 'bama',
-                name: 'BAMA',
-                price: 300,
-                oldPrice: 500,
-                icon: 'fa-shield-halved',
-                colorTheme: 'from-emerald-500/20 to-teal-700/10 border-emerald-500/40 text-emerald-400',
-                btnBg: 'bg-emerald-500 hover:bg-emerald-600 text-white',
-                perks: {
-                    ua: ['Всі можливості Premium', 'Годування (/feed) та лікування (/heal)', '8 точок дому', 'Набір /kit Bama', 'Віртуальний верстак (/workbench)'],
-                    ru: ['Все возможности Premium', 'Кормление (/feed) и лечение (/heal)', '8 точек дома', 'Набор /kit Bama', 'Виртуальный верстак (/workbench)']
-                }
-            },
-            {
-                id: 'bamboo',
-                name: 'BAMBOO',
-                price: 600,
-                oldPrice: 1000,
-                icon: 'fa-leaf',
-                colorTheme: 'from-bamboo-500/20 to-green-700/10 border-bamboo-500/40 text-bamboo-400',
-                btnBg: 'bg-bamboo-500 hover:bg-bamboo-600 text-white',
-                perks: {
-                    ua: ['Всі можливості Bama', 'Режим безсмертя (/god)', 'Ремонт предметів (/repair)', '12 точок дому', 'Набір /kit Bamboo', 'Пріоритетний вхід на сервер'],
-                    ru: ['Все возможности Bama', 'Режим бессмертия (/god)', 'Ремонт предметов (/repair)', '12 точек дома', 'Набор /kit Bamboo', 'Приоритетный вход на сервер']
-                }
-            },
-            {
-                id: 'summer',
-                name: 'SUMMER',
-                price: 700,
-                oldPrice: 1000,
-                icon: 'fa-sun',
-                colorTheme: 'from-orange-500/20 to-amber-600/10 border-orange-500/40 text-orange-400',
-                btnBg: 'bg-orange-500 hover:bg-orange-600 text-white',
-                perks: {
-                    ua: ['Всі можливості Bamboo', 'Ексклюзивний літній /kit Summer', 'Персональна зміна погоди (/ptime)', '15 точок дому', 'Унікальний партикл-шлейф за гравцем'],
-                    ru: ['Все возможности Bamboo', 'Эксклюзивный летний /kit Summer', 'Персональная смена погоды (/ptime)', '15 точек дома', 'Уникальный партикл-шлейф за игроком']
-                }
-            },
-            {
-                id: 'bilder',
-                name: 'BILDER',
-                price: 1200,
-                oldPrice: 2000,
-                icon: 'fa-hammer',
-                colorTheme: 'from-purple-500/20 to-indigo-700/10 border-purple-500/40 text-purple-400',
-                btnBg: 'bg-purple-500 hover:bg-purple-600 text-white',
-                perks: {
-                    ua: ['Повний комплект будівельника', 'Прискорення руху (/speed)', 'Детектор гравців (/near)', 'Безліч точок дому', 'Набір /kit Bilder + топові ресурси'],
-                    ru: ['Полный комплект строителя', 'Ускорение движения (/speed)', 'Детектор игроков (/near)', 'Неограниченно точек дома', 'Набор /kit Bilder + топовые ресурсы']
-                }
-            }
+    <script>
+        const roles = [
+            { id: "PREMIUM", name: "PREMIUM", price: 15, icon: "fa-crown" },
+            { id: "BAMA", name: "BAMA", price: 30, icon: "fa-shield-halved" },
+            { id: "BAMBOO", name: "BAMBOO", price: 50, icon: "fa-bolt" },
+            { id: "SUMMER", name: "SUMMER", price: 100, icon: "fa-sun" },
+            { id: "BILDER", name: "BILDER", price: 150, icon: "fa-hammer" }
         ];
 
-        // --- Translations Dictionary ---
+        let activeCategory = 'ranks'; // 'ranks' або 'coins'
+        let selectedRole = roles[0];
+        let coinPricePerItem = 1; // 1 монета = 1 грн
+        let currentLang = 'uk';
+
         const translations = {
-            ua: {
-                tagline: "MINECRAFT SERVER",
-                discordBtn: "Discord",
-                serverStatusOnline: "СЕРВЕР ПРАЦЮЄ • ВЕРСІЯ 1.16.5 - 1.20.x",
-                heroTitle1: "ОТРИМАЙ МАКСИМУМ ВІД ГРИ НА",
-                heroDesc: "Унікальний сервер з особливою атмосферою, збалансованою економікою та дружнім ком'юніті. Обирай привілегію та підкорюй світ вже зараз!",
-                heroBuyBtn: "Обрати донат",
-                heroDiscordBtn: "Наш Discord",
-                ipTitle: "АДРЕСА ДЛЯ ПІДКЛЮЧЕННЯ",
-                copyIpBtn: "СКОПІЮВАТИ IP",
-                shopTitle: "МАГАЗИН ПРИВІЛЕГІЙ",
-                shopSubtitle: "Обери свій статус та отримай унікальні можливості на сервері",
-                instantDelivery: "МИТТЄВА АВТОВИДАЧА",
-                buyBtn: "Придбати",
-                recentPurchasesTitle: "ОСТАННІ ПОКУПКИ",
-                liveUpdates: "Оновлюється в реальному часі",
-                faqTitle: "ЧАСТІ ПИТАННЯ",
-                faqSubtitle: "Відповіді на популярні питання гравців",
-                copyright: "© 2026 BamboWorld. Всі права захищені.",
-                notMojang: "Не пов'язано з Mojang Studios",
-                checkoutTitle: "ОФОРМЛЕННЯ ПОКУПКИ",
-                nickLabel: "ІГРОВИЙ НІКНЕЙМ",
-                nickHint: "Вказуйте точно такий нік, під яким граєте на сервері",
-                promoLabel: "ПРОМОКОД (ЗА НАЯВНОСТІ)",
-                applyBtn: "ЗАСТОСУВАТИ",
-                paymentMethodLabel: "СПОСІБ ОПЛАТИ",
-                totalPay: "До сплати:",
-                payNowBtn: "ПЕРЕЙТИ ДО ОПЛАТИ",
-                toastIpCopied: "IP-адресу скопійовано: tex.ravenhost.space:18510",
-                toastEnterNick: "Будь ласка, вкажіть ваш ігровий нікнейм!",
-                toastPromoSuccess: "Промокод активовано!",
-                toastPromoInvalid: "Недійсний промокод!",
+            uk: {
+                tabRanks: "Привілегії",
+                tabCoins: "Донат Монети",
+                coinsCountLabel: "Кількість монет (1 монета = 1 ₴):",
+                checkoutTitle: "Оформлення покупки",
+                nickLabel: "Нікнейм у Minecraft",
+                nickPlaceholder: "Введіть ваш нік...",
+                selectedRoleLabel: "Товар:",
+                totalLabel: "До сплати:",
+                payBtn: "Оплатити",
+                toastEnterNick: "Будь ласка, вкажіть ваш нікнейм!",
                 toastRedirectPay: "Перенаправлення на оплату..."
             },
-            ru: {
-                tagline: "MINECRAFT SERVER",
-                discordBtn: "Discord",
-                serverStatusOnline: "СЕРВЕР РАБОТАЕТ • ВЕРСИЯ 1.16.5 - 1.20.x",
-                heroTitle1: "ПОЛУЧИ МАКСИМУМ ОТ ИГРЫ НА",
-                heroDesc: "Уникальный сервер с особой атмосферой, сбалансированной экономикой и дружным комьюнити. Выбирай привилегию и покоряй мир прямо сейчас!",
-                heroBuyBtn: "Выбрать донат",
-                heroDiscordBtn: "Наш Discord",
-                ipTitle: "АДРЕС ДЛЯ ПОДКЛЮЧЕНИЯ",
-                copyIpBtn: "СКОПИРОВАТЬ IP",
-                shopTitle: "МАГАЗИН ПРИВИЛЕГИЙ",
-                shopSubtitle: "Выбери свой статус и получи уникальные возможности на сервере",
-                instantDelivery: "МГНОВЕННАЯ АВТОВЫДАЧА",
-                buyBtn: "Купить",
-                recentPurchasesTitle: "ПОСЛЕДНИЕ ПОКУПКИ",
-                liveUpdates: "Обновляется в реальном времени",
-                faqTitle: "ЧАСТЫЕ ВОПРОСЫ",
-                faqSubtitle: "Ответы на популярные вопросы игроков",
-                copyright: "© 2026 BamboWorld. Все права защищены.",
-                notMojang: "Не связано с Mojang Studios",
-                checkoutTitle: "ОФОРМЛЕНИЕ ПОКУПКИ",
-                nickLabel: "ИГРОВОЙ НИКНЕЙМ",
-                nickHint: "Указывайте точно такой ник, под которым играете на сервере",
-                promoLabel: "ПРОМОКОД (ПРИ НАЛИЧИИ)",
-                applyBtn: "ПРИМЕНИТЬ",
-                paymentMethodLabel: "СПОСОБ ОПЛАТЫ",
-                totalPay: "К оплате:",
-                payNowBtn: "ПЕРЕЙТИ К ОПЛАТЕ",
-                toastIpCopied: "IP-адрес скопирован: tex.ravenhost.space:18510",
-                toastEnterNick: "Пожалуйста, укажите ваш игровой никнейм!",
-                toastPromoSuccess: "Промокод активирован!",
-                toastPromoInvalid: "Недействительный промокод!",
-                toastRedirectPay: "Перенаправление на оплату..."
+            en: {
+                tabRanks: "Ranks",
+                tabCoins: "Donate Coins",
+                coinsCountLabel: "Coins amount (1 coin = 1 ₴):",
+                checkoutTitle: "Checkout",
+                nickLabel: "Minecraft Nickname",
+                nickPlaceholder: "Enter your nickname...",
+                selectedRoleLabel: "Item:",
+                totalLabel: "Total:",
+                payBtn: "Pay Now",
+                toastEnterNick: "Please enter your nickname!",
+                toastRedirectPay: "Redirecting to payment..."
             }
         };
 
-        const faqData = [
-            {
-                q: { ua: "Як швидко видається донат після оплати?", ru: "Как быстро выдается донат после оплаты?" },
-                a: { ua: "Привілегія видається автоматично протягом 10-30 секунд після підтвердження платежу. Сервер повинен бути увімкнений.", ru: "Привилегия выдается автоматически в течение 10-30 секунд после подтверждения платежа. Сервер должен быть включен." }
-            },
-            {
-                q: { ua: "Що робити, якщо донат не прийшов?", ru: "Что делать, если донат не пришел?" },
-                a: { ua: "Зверніться у наш підтримуючу групу в Discord (discord.gg/yBZRPWv4jM) з чеком оплати та ніком, і ми миттєво вирішимо питання.", ru: "Обратитесь в нашу службу поддержки в Discord (discord.gg/yBZRPWv4jM) с чеком оплаты и ником, и мы мгновенно решим вопрос." }
-            },
-            {
-                q: { ua: "Чи зберігається донат після вайпу?", ru: "Сохраняется ли донат после вайпа?" },
-                a: { ua: "Так, усі придбані привілегії назавжди закріплюються за вашим нікнеймом і зберігаються після вайпів.", ru: "Да, все купленные привилегии навсегда закрепляются за вашим никнеймом и сохраняются после вайпов." }
-            },
-            {
-                q: { ua: "Як працюють промокоди?", ru: "Как работают промокоды?" },
-                a: { ua: "Введіть промокод у спеціальне поле у вікні покупки перед оплатою, щоб отримати знижку.", ru: "Введите промокод в специальное поле в окне покупки перед оплатой, чтобы получить скидку." }
-            }
-        ];
+        function switchCategory(category) {
+            activeCategory = category;
+            
+            document.getElementById('tabRanks').classList.toggle('active', category === 'ranks');
+            document.getElementById('tabCoins').classList.toggle('active', category === 'coins');
 
-        const recentPurchasesSeed = [
-            { nick: "VanyaPro", role: "BAMBOO", time: "2 хв тому" },
-            { nick: "DarkKnight", role: "SUMMER", time: "5 хв тому" },
-            { nick: "MineCraft_God", role: "PREMIUM", time: "12 хв тому" },
-            { nick: "BuilderBob", role: "BILDER", time: "18 хв тому" }
-        ];
-
-        // --- Web Audio API Synth ---
-        function initAudioContext() {
-            if (!audioCtx) {
-                const AudioContext = window.AudioContext || window.webkitAudioContext;
-                audioCtx = new AudioContext();
-            }
-        }
-
-        function playAudio(type) {
-            if (!soundEnabled) return;
-            try {
-                initAudioContext();
-                if (audioCtx.state === 'suspended') {
-                    audioCtx.resume();
-                }
-
-                const now = audioCtx.currentTime;
-                const osc = audioCtx.createOscillator();
-                const gain = audioCtx.createGain();
-
-                osc.connect(gain);
-                gain.connect(audioCtx.destination);
-
-                if (type === 'click') {
-                    osc.type = 'sine';
-                    osc.frequency.setValueAtTime(400, now);
-                    osc.frequency.exponentialRampToValueAtTime(120, now + 0.08);
-                    gain.gain.setValueAtTime(0.15, now);
-                    gain.gain.linearRampToValueAtTime(0, now + 0.08);
-                    osc.start(now);
-                    osc.stop(now + 0.08);
-                } else if (type === 'select') {
-                    osc.type = 'triangle';
-                    osc.frequency.setValueAtTime(520, now);
-                    osc.frequency.exponentialRampToValueAtTime(880, now + 0.12);
-                    gain.gain.setValueAtTime(0.2, now);
-                    gain.gain.linearRampToValueAtTime(0, now + 0.12);
-                    osc.start(now);
-                    osc.stop(now + 0.12);
-                } else if (type === 'promo') {
-                    osc.type = 'sine';
-                    osc.frequency.setValueAtTime(587.33, now); // D5
-                    osc.frequency.setValueAtTime(880, now + 0.1); // A5
-                    gain.gain.setValueAtTime(0.2, now);
-                    gain.gain.linearRampToValueAtTime(0, now + 0.25);
-                    osc.start(now);
-                    osc.stop(now + 0.25);
-                } else if (type === 'pay') {
-                    osc.type = 'sine';
-                    osc.frequency.setValueAtTime(523.25, now); // C5
-                    osc.frequency.setValueAtTime(659.25, now + 0.1); // E5
-                    osc.frequency.setValueAtTime(783.99, now + 0.2); // G5
-                    osc.frequency.setValueAtTime(1046.50, now + 0.3); // C6
-                    gain.gain.setValueAtTime(0.25, now);
-                    gain.gain.linearRampToValueAtTime(0, now + 0.5);
-                    osc.start(now);
-                    osc.stop(now + 0.5);
-                }
-            } catch (e) {
-                console.log("Audio play error:", e);
-            }
-        }
-
-        function toggleSound() {
-            soundEnabled = !soundEnabled;
-            const icon = document.getElementById('soundIcon');
-            if (soundEnabled) {
-                icon.className = 'fa-solid fa-volume-high text-lg text-bamboo-400';
-                playAudio('click');
+            if (category === 'ranks') {
+                document.getElementById('rolesGrid').style.display = 'grid';
+                document.getElementById('coinsPanel').classList.remove('active');
+                updateSummary();
             } else {
-                icon.className = 'fa-solid fa-volume-xmark text-lg text-gray-500';
+                document.getElementById('rolesGrid').style.display = 'none';
+                document.getElementById('coinsPanel').classList.add('active');
+                updateCoinsCalculation();
             }
         }
 
-        // --- Render UI Functions ---
-        function renderProducts() {
-            const grid = document.getElementById('productsGrid');
+        function renderRoles() {
+            const grid = document.getElementById('rolesGrid');
             grid.innerHTML = '';
 
-            donationItems.forEach(item => {
+            roles.forEach(role => {
                 const card = document.createElement('div');
-                card.className = `glass-panel glass-panel-hover rounded-2xl p-6 border flex flex-col justify-between relative overflow-hidden ${item.colorTheme.includes('border') ? item.colorTheme.split(' ').find(c => c.startsWith('border')) : 'border-white/10'}`;
-
-                const perksList = item.perks[currentLang].map(p => `
-                    <li class="flex items-start gap-2.5 text-xs text-gray-300">
-                        <i class="fa-solid fa-check text-bamboo-400 mt-0.5 flex-shrink-0"></i>
-                        <span>${p}</span>
-                    </li>
-                `).join('');
+                card.className = `role-card ${role.id === selectedRole.id ? 'selected' : ''}`;
+                card.onclick = () => selectRole(role);
 
                 card.innerHTML = `
-                    <div class="space-y-4">
-                        <div class="flex items-center justify-between">
-                            <div class="w-12 h-12 rounded-xl bg-gradient-to-br ${item.colorTheme} flex items-center justify-center text-xl shadow">
-                                <i class="fa-solid ${item.icon}"></i>
-                            </div>
-                            <div class="text-right">
-                                <span class="text-xs text-gray-500 line-through block">${item.oldPrice} ₽</span>
-                                <span class="text-2xl font-black font-display text-white">${item.price} ₽</span>
-                            </div>
-                        </div>
-
-                        <div>
-                            <h3 class="text-xl font-black font-display text-white tracking-wide">${item.name}</h3>
-                        </div>
-
-                        <ul class="space-y-2.5 pt-2 border-t border-white/10">
-                            ${perksList}
-                        </ul>
-                    </div>
-
-                    <div class="pt-6">
-                        <button onclick="openCheckoutModal('${item.id}');" class="w-full py-3 px-4 rounded-xl font-bold text-xs uppercase tracking-wider ${item.btnBg} shadow-md transition-all active:scale-95 flex items-center justify-center gap-2">
-                            <i class="fa-solid fa-cart-shopping"></i>
-                            <span>${translations[currentLang].buyBtn}</span>
-                        </button>
-                    </div>
+                    <i class="fa-solid ${role.icon} role-icon"></i>
+                    <div class="role-title">${role.name}</div>
+                    <div class="role-price">${role.price} ₴</div>
                 `;
-
                 grid.appendChild(card);
             });
+
+            updateSummary();
         }
 
-        function renderRecentPurchases() {
-            const container = document.getElementById('recentPurchasesFeed');
-            container.innerHTML = '';
-
-            recentPurchasesSeed.forEach(item => {
-                const div = document.createElement('div');
-                div.className = "p-3 rounded-xl bg-gray-900/60 border border-white/5 flex items-center gap-3";
-                div.innerHTML = `
-                    <img src="https://mc-heads.net/avatar/${item.nick}/40" onerror="this.src='https://mc-heads.net/avatar/Steve/40'" class="w-9 h-9 rounded-lg bg-gray-800" alt="${item.nick}">
-                    <div class="overflow-hidden">
-                        <div class="text-xs font-bold text-white truncate">${item.nick}</div>
-                        <div class="text-[10px] text-bamboo-400 font-semibold">${item.role} • <span class="text-gray-500">${item.time}</span></div>
-                    </div>
-                `;
-                container.appendChild(div);
-            });
+        function selectRole(role) {
+            selectedRole = role;
+            renderRoles();
         }
 
-        function renderFAQ() {
-            const accordion = document.getElementById('faqAccordion');
-            accordion.innerHTML = '';
-
-            faqData.forEach((item, index) => {
-                const itemEl = document.createElement('div');
-                itemEl.className = "glass-panel rounded-xl border border-white/10 overflow-hidden";
-                itemEl.innerHTML = `
-                    <button onclick="toggleFaq(${index});" class="w-full p-4 text-left font-bold text-sm text-white flex items-center justify-between gap-4 hover:bg-white/5 transition-colors">
-                        <span>${item.q[currentLang]}</span>
-                        <i id="faqIcon-${index}" class="fa-solid fa-chevron-down text-xs text-bamboo-400 transition-transform duration-300"></i>
-                    </button>
-                    <div id="faqAnswer-${index}" class="px-4 pb-4 text-xs text-gray-400 leading-relaxed hidden">
-                        ${item.a[currentLang]}
-                    </div>
-                `;
-                accordion.appendChild(itemEl);
-            });
-        }
-
-        function toggleFaq(index) {
-            playAudio('click');
-            const ans = document.getElementById(`faqAnswer-${index}`);
-            const icon = document.getElementById(`faqIcon-${index}`);
-            if (ans.classList.contains('hidden')) {
-                ans.classList.remove('hidden');
-                icon.style.transform = 'rotate(180deg)';
-            } else {
-                ans.classList.add('hidden');
-                icon.style.transform = 'rotate(0deg)';
+        function updateSummary() {
+            if (activeCategory === 'ranks') {
+                document.getElementById('selectedRoleName').innerText = selectedRole.name;
+                document.getElementById('selectedRolePrice').innerText = `${selectedRole.price} ₴`;
             }
         }
 
-        // --- Checkout Modal & Logic ---
-        function openCheckoutModal(roleId) {
-            playAudio('select');
-            selectedRole = donationItems.find(i => i.id === roleId);
-            appliedDiscount = 0;
-            document.getElementById('promoInput').value = '';
-            document.getElementById('promoMessage').className = 'text-xs mt-1 hidden font-semibold';
-            
-            // Set role UI
-            document.getElementById('modalRoleName').innerText = selectedRole.name;
-            const iconContainer = document.getElementById('modalRoleIcon');
-            iconContainer.innerHTML = `<i class="fa-solid ${selectedRole.icon}"></i>`;
+        function updateCoinsCalculation() {
+            let amount = parseInt(document.getElementById('coinsAmount').value) || 0;
+            if (amount < 1) amount = 1;
+            const totalPrice = amount * coinPricePerItem;
 
-            updatePriceDisplay();
-            
-            const modal = document.getElementById('checkoutModal');
-            modal.classList.remove('hidden');
+            document.getElementById('selectedRoleName').innerText = `${amount} Монет`;
+            document.getElementById('selectedRolePrice').innerText = `${totalPrice} ₴`;
         }
 
-        function closeCheckoutModal() {
-            playAudio('click');
-            document.getElementById('checkoutModal').classList.add('hidden');
+        function setLanguage(lang) {
+            currentLang = lang;
+            document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            const t = translations[lang];
+            document.getElementById('txtTabRanks').innerText = t.tabRanks;
+            document.getElementById('txtTabCoins').innerText = t.tabCoins;
+            document.getElementById('txtCoinsCountLabel').innerText = t.coinsCountLabel;
+            document.getElementById('txtCheckoutTitle').innerText = t.checkoutTitle;
+            document.getElementById('txtNickLabel').innerText = t.nickLabel;
+            document.getElementById('playerNickname').placeholder = t.nickPlaceholder;
+            document.getElementById('txtSelectedRoleLabel').innerText = t.selectedRoleLabel;
+            document.getElementById('txtTotalLabel').innerText = t.totalLabel;
+            document.getElementById('txtPayBtn').innerText = t.payBtn;
         }
 
-        function updateAvatarPreview(nick) {
-            const avatar = document.getElementById('avatarPreview');
-            const trimmed = nick.trim();
-            if (trimmed.length > 0) {
-                avatar.src = `https://mc-heads.net/avatar/${trimmed}/100`;
-            } else {
-                avatar.src = `https://mc-heads.net/avatar/Steve/100`;
-            }
-        }
+        function showToast(message, type = "success") {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerText = message;
+            container.appendChild(toast);
 
-        function applyPromoCode() {
-            const input = document.getElementById('promoInput').value.trim();
-            const msg = document.getElementById('promoMessage');
-
-            if (input === 'rebayt') {
-                playAudio('promo');
-                appliedDiscount = 15;
-                msg.textContent = `✓ Промокод 'rebayt' активовано (-15%)!`;
-                msg.className = "text-xs mt-1 font-semibold text-bamboo-400 block";
-                showToast(translations[currentLang].toastPromoSuccess, "success");
-            } else if (input.toUpperCase() === 'BAMBOO') {
-                playAudio('promo');
-                appliedDiscount = 10;
-                msg.textContent = `✓ Промокод 'BAMBOO' активовано (-10%)!`;
-                msg.className = "text-xs mt-1 font-semibold text-bamboo-400 block";
-                showToast(translations[currentLang].toastPromoSuccess, "success");
-            } else {
-                playAudio('click');
-                appliedDiscount = 0;
-                msg.textContent = `✕ ${translations[currentLang].toastPromoInvalid}`;
-                msg.className = "text-xs mt-1 font-semibold text-rose-500 block";
-            }
-
-            updatePriceDisplay();
-        }
-
-        function updatePriceDisplay() {
-            if (!selectedRole) return;
-            const basePrice = selectedRole.price;
-            const oldDisplay = document.getElementById('oldPriceDisplay');
-            const finalDisplay = document.getElementById('finalPriceDisplay');
-
-            if (appliedDiscount > 0) {
-                const discounted = Math.round(basePrice * (1 - appliedDiscount / 100));
-                oldDisplay.innerText = `${basePrice} ₽`;
-                finalDisplay.innerText = `${discounted} ₽`;
-            } else {
-                oldDisplay.innerText = '';
-                finalDisplay.innerText = `${basePrice} ₽`;
-            }
-        }
-
-        function selectPaymentMethod(method) {
-            playAudio('click');
-            activePaymentMethod = method;
-            const btns = document.querySelectorAll('.pay-method-btn');
-            btns.forEach(btn => {
-                btn.classList.remove('active', 'border-bamboo-500', 'text-white');
-                btn.classList.add('border-white/10', 'text-gray-400');
-            });
-            event.currentTarget.classList.add('active', 'border-bamboo-500', 'text-white');
-            event.currentTarget.classList.remove('border-white/10', 'text-gray-400');
+            setTimeout(() => {
+                toast.remove();
+            }, 3000);
         }
 
         function processPayment() {
             const nickInput = document.getElementById('playerNickname').value.trim();
             if (!nickInput) {
-                playAudio('click');
                 showToast(translations[currentLang].toastEnterNick, "error");
                 document.getElementById('playerNickname').focus();
                 return;
             }
 
-            playAudio('pay');
             showToast(translations[currentLang].toastRedirectPay, "success");
 
-            // Calculate final price
-            const finalPrice = appliedDiscount > 0 ? Math.round(selectedRole.price * (1 - appliedDiscount / 100)) : selectedRole.price;
-
             setTimeout(() => {
-                // Payment gateway redirect placeholder
-                alert(`[ОПЛАТА]:\nГравець: ${nickInput}\nТовар: ${selectedRole.name}\nСума: ${finalPrice} ₽\nСпосіб: ${activePaymentMethod.toUpperCase()}`);
-                closeCheckoutModal();
+                if (activeCategory === 'ranks') {
+                    // Перехід на магазин привілегії
+                    window.location.href = `https://minepay.store/${selectedRole.id.toLowerCase()}?username=${encodeURIComponent(nickInput)}`;
+                } else {
+                    // Перехід на покупку монет (якщо ви створите окремий магазин "coins" у MinePay)
+                    const coinsAmount = document.getElementById('coinsAmount').value;
+                    window.location.href = `https://minepay.store/coins?username=${encodeURIComponent(nickInput)}&quantity=${coinsAmount}`;
+                }
             }, 800);
         }
 
-        // --- Copy Server IP ---
-        function copyServerIP() {
-            playAudio('click');
-            const ip = "tex.ravenhost.space:18510";
-            
-            const textarea = document.createElement('textarea');
-            textarea.value = ip;
-            document.body.appendChild(textarea);
-            textarea.select();
-            try {
-                document.execCommand('copy');
-                showToast(translations[currentLang].toastIpCopied, "success");
-            } catch (err) {
-                console.error('Failed to copy', err);
-            }
-            document.body.removeChild(textarea);
-        }
-
-        // --- Toast System ---
-        function showToast(message, type = "info") {
-            const container = document.getElementById('toastContainer');
-            const toast = document.createElement('div');
-            toast.className = `pointer-events-auto px-4 py-3 rounded-xl glass-panel border font-medium text-xs shadow-xl flex items-center gap-3 transition-all duration-300 transform translate-y-2 opacity-0 ${type === 'success' ? 'border-bamboo-500/50 text-bamboo-400' : 'border-rose-500/50 text-rose-400'}`;
-            
-            const icon = type === 'success' ? 'fa-circle-check' : 'fa-circle-exclamation';
-            toast.innerHTML = `<i class="fa-solid ${icon} text-base"></i><span>${message}</span>`;
-            
-            container.appendChild(toast);
-
-            setTimeout(() => {
-                toast.classList.remove('translate-y-2', 'opacity-0');
-            }, 10);
-
-            setTimeout(() => {
-                toast.classList.add('opacity-0', 'translate-y-[-10px]');
-                setTimeout(() => toast.remove(), 300);
-            }, 3000);
-        }
-
-        // --- Language Switcher ---
-        function setLanguage(lang) {
-            playAudio('click');
-            currentLang = lang;
-
-            document.getElementById('langUA').className = lang === 'ua' ? 'px-3 py-1.5 rounded-lg text-xs font-bold transition-all bg-bamboo-500 text-white shadow' : 'px-3 py-1.5 rounded-lg text-xs font-bold text-gray-400 hover:text-white transition-all';
-            document.getElementById('langRU').className = lang === 'ru' ? 'px-3 py-1.5 rounded-lg text-xs font-bold transition-all bg-bamboo-500 text-white shadow' : 'px-3 py-1.5 rounded-lg text-xs font-bold text-gray-400 hover:text-white transition-all';
-
-            // Translate static elements
-            document.querySelectorAll('[data-i18n]').forEach(el => {
-                const key = el.getAttribute('data-i18n');
-                if (translations[lang][key]) {
-                    el.innerText = translations[lang][key];
-                }
-            });
-
-            // Re-render components
-            renderProducts();
-            renderFAQ();
-        }
-
-        // --- Interactive Particle Background ---
-        function initCanvas() {
-            const canvas = document.getElementById('bgCanvas');
-            const ctx = canvas.getContext('2d');
-
-            let width = canvas.width = window.innerWidth;
-            let height = canvas.height = window.innerHeight;
-
-            window.addEventListener('resize', () => {
-                width = canvas.width = window.innerWidth;
-                height = canvas.height = window.innerHeight;
-            });
-
-            const particles = [];
-            const particleCount = 45;
-
-            for (let i = 0; i < particleCount; i++) {
-                particles.push({
-                    x: Math.random() * width,
-                    y: Math.random() * height,
-                    size: Math.random() * 3 + 1,
-                    speedY: -(Math.random() * 0.8 + 0.2),
-                    speedX: Math.random() * 0.4 - 0.2,
-                    opacity: Math.random() * 0.5 + 0.2,
-                    isLeaf: Math.random() > 0.6,
-                    angle: Math.random() * Math.PI * 2,
-                    rotSpeed: (Math.random() - 0.5) * 0.02
-                });
-            }
-
-            function animate() {
-                ctx.clearRect(0, 0, width, height);
-
-                particles.forEach(p => {
-                    p.y += p.speedY;
-                    p.x += p.speedX;
-                    p.angle += p.rotSpeed;
-
-                    if (p.y < -10) {
-                        p.y = height + 10;
-                        p.x = Math.random() * width;
-                    }
-
-                    ctx.save();
-                    ctx.translate(p.x, p.y);
-                    ctx.rotate(p.angle);
-
-                    if (p.isLeaf) {
-                        // Bamboo leaf shape
-                        ctx.beginPath();
-                        ctx.moveTo(0, -p.size * 3);
-                        ctx.quadraticCurveTo(p.size * 2, 0, 0, p.size * 3);
-                        ctx.quadraticCurveTo(-p.size * 2, 0, 0, -p.size * 3);
-                        ctx.fillStyle = `rgba(34, 197, 94, ${p.opacity})`;
-                        ctx.fill();
-                    } else {
-                        // Glowing emerald particle
-                        ctx.beginPath();
-                        ctx.arc(0, 0, p.size, 0, Math.PI * 2);
-                        ctx.fillStyle = `rgba(74, 222, 128, ${p.opacity})`;
-                        ctx.shadowBlur = 8;
-                        ctx.shadowColor = '#22c55e';
-                        ctx.fill();
-                    }
-
-                    ctx.restore();
-                });
-
-                requestAnimationFrame(animate);
-            }
-
-            animate();
-        }
-
-        // --- Init on DOM Load ---
-        window.onload = function() {
-            renderProducts();
-            renderRecentPurchases();
-            renderFAQ();
-            initCanvas();
-        };
+        // Ініціалізація
+        renderRoles();
     </script>
 </body>
 </html>
