@@ -1,281 +1,900 @@
 <!DOCTYPE html>
-<html lang="uk">
+<html lang="uk" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BamboWorld — Донат</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <title>BamboWorld — Офіційний магазин донату</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts Inter & Orbitron -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Orbitron:wght@600;800;900&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        bamboo: {
+                            50: '#f0fdf4',
+                            100: '#dcfce7',
+                            400: '#4ade80',
+                            500: '#22c55e',
+                            600: '#16a34a',
+                            700: '#15803d',
+                            900: '#14532d',
+                            950: '#052e16',
+                        },
+                        darkbg: '#0a0e14',
+                        cardbg: '#111823',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Orbitron', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
     <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Inter', sans-serif;
-        }
-
         body {
-            background-color: #0b0f0c;
-            color: #ffffff;
-            padding: 40px 20px;
-            display: flex;
-            justify-content: center;
+            background-color: #0a0e14;
+            color: #f3f4f6;
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
         }
 
-        .donate-card {
-            background: rgba(18, 26, 20, 0.85);
-            border: 1px solid rgba(16, 185, 129, 0.25);
-            border-radius: 20px;
-            padding: 30px;
-            width: 100%;
-            max-width: 550px;
-            backdrop-filter: blur(10px);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        #bgCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 0;
+            pointer-events: none;
         }
 
-        .block-title {
-            font-size: 24px;
-            font-weight: 800;
-            text-transform: uppercase;
-            text-align: center;
-            color: #fff;
-            margin-bottom: 6px;
+        .glass-panel {
+            background: rgba(17, 24, 35, 0.8);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
         }
 
-        .block-subtitle {
-            color: #71717a;
-            font-size: 14px;
-            text-align: center;
-            margin-bottom: 25px;
+        .glass-panel-hover {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        .form-group {
-            margin-bottom: 20px;
+        .glass-panel-hover:hover {
+            transform: translateY(-6px);
+            border-color: rgba(34, 197, 94, 0.4);
+            box-shadow: 0 12px 30px -10px rgba(34, 197, 94, 0.25);
         }
 
-        .form-label {
-            display: block;
-            font-size: 12px;
-            font-weight: 700;
-            color: #71717a;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 8px;
+        .glow-green {
+            box-shadow: 0 0 30px -5px rgba(34, 197, 94, 0.3);
         }
 
-        .form-input, .form-select {
-            width: 100%;
-            padding: 14px 16px;
-            background: rgba(0, 0, 0, 0.5);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
-            color: #fff;
-            font-size: 15px;
-            outline: none;
-            transition: border-color 0.2s;
+        .text-glow-green {
+            text-shadow: 0 0 14px rgba(34, 197, 94, 0.6);
         }
 
-        .form-input:focus, .form-select:focus {
-            border-color: #10b981;
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0a0e14;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1f293d;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #22c55e;
         }
 
-        .form-select option {
-            background: #121a14;
-            color: #fff;
+        @keyframes modalFadeIn {
+            from { opacity: 0; transform: scale(0.95) translateY(10px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+        .animate-modal {
+            animation: modalFadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
 
-        /* Перемикач типом покупки */
-        .type-selector {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
+        .online-ping {
+            animation: ping 1.5s cubic-bezier(0, 0, 0.2, 1) infinite;
         }
-
-        .type-btn {
-            flex: 1;
-            padding: 12px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            color: #a0a0a0;
-            border-radius: 10px;
-            font-weight: 700;
-            font-size: 14px;
-            cursor: pointer;
-            transition: 0.2s;
-            text-align: center;
-        }
-
-        .type-btn.active {
-            background: #10b981;
-            border-color: #10b981;
-            color: #000;
-            box-shadow: 0 0 15px rgba(16, 185, 129, 0.3);
-        }
-
-        .preset-buttons {
-            display: flex;
-            gap: 8px;
-            margin-top: 10px;
-        }
-
-        .preset-btn {
-            flex: 1;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            color: #fff;
-            padding: 8px;
-            border-radius: 8px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-
-        .preset-btn:hover {
-            background: rgba(16, 185, 129, 0.2);
-            border-color: #10b981;
-        }
-
-        .total-box {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin: 25px 0 15px 0;
-            padding-top: 20px;
-            border-top: 1px solid rgba(255, 255, 255, 0.08);
-        }
-
-        .total-label {
-            color: #a1a1aa;
-            font-size: 16px;
-        }
-
-        .total-amount {
-            font-size: 32px;
-            font-weight: 800;
-            color: #10b981;
-        }
-
-        .btn-buy {
-            display: block;
-            width: 100%;
-            padding: 16px;
-            background: #10b981;
-            color: #000;
-            text-align: center;
-            text-decoration: none;
-            font-weight: 800;
-            border-radius: 10px;
-            font-size: 17px;
-            border: none;
-            cursor: pointer;
-            transition: background 0.2s ease, box-shadow 0.2s ease;
-        }
-
-        .btn-buy:hover {
-            background: #34d399;
-            box-shadow: 0 0 20px rgba(16, 185, 129, 0.4);
+        @keyframes ping {
+            75%, 100% {
+                transform: scale(2);
+                opacity: 0;
+            }
         }
     </style>
 </head>
-<body>
+<body class="relative min-h-screen flex flex-col justify-between selection:bg-bamboo-500 selection:text-white">
 
-<div class="donate-card">
-    <div class="block-title">💳 ПОПОВНЕННЯ ТА ДОНАТ</div>
-    <div class="block-subtitle">Вкажи свій нікнейм та обери товар для покупки</div>
+    <!-- Interactive Canvas Background -->
+    <canvas id="bgCanvas"></canvas>
 
-    <!-- Перемикач типу: Привілегія або Бамбук -->
-    <div class="type-selector">
-        <button class="type-btn active" id="btn-rank" onclick="selectType('rank')">👑 ПРИВІЛЕГІЇ</button>
-        <button class="type-btn" id="btn-currency" onclick="selectType('currency')">🎋 ВАЛЮТА БАМБУК</button>
-    </div>
+    <!-- Toast Container -->
+    <div id="toastContainer" class="fixed top-20 right-5 z-50 flex flex-col gap-3 pointer-events-none"></div>
 
-    <!-- Поле введення ніку -->
-    <div class="form-group">
-        <label class="form-label">Ігровий нікнейм</label>
-        <input type="text" id="player-nick" class="form-input" placeholder="Введи свій нік...">
-    </div>
-
-    <!-- Блок вибору привілегій -->
-    <div id="ranks-section" class="form-group">
-        <label class="form-label">Обери привілегію</label>
-        <select id="rank-select" class="form-select" onchange="updatePrice()">
-            <option value="50">PREMIUM — 50 ГРН</option>
-            <option value="100">BAMBOO — 100 ГРН</option>
-            <option value="150">SUMMER — 150 ГРН</option>
-            <option value="200">BILDER — 200 ГРН</option>
-        </select>
-    </div>
-
-    <!-- Блок вибору валюти Бамбук (захований за замовчуванням) -->
-    <div id="currency-section" class="form-group" style="display: none;">
-        <label class="form-label">Кількість Бамбука</label>
-        <input type="number" id="bamboo-count" class="form-input" value="50" min="1" oninput="updatePrice()">
+    <div class="relative z-10 flex flex-col min-h-screen">
         
-        <div class="preset-buttons">
-            <button class="preset-btn" onclick="setAmount(10)">10</button>
-            <button class="preset-btn" onclick="setAmount(50)">50</button>
-            <button class="preset-btn" onclick="setAmount(100)">100</button>
-            <button class="preset-btn" onclick="setAmount(250)">250</button>
-            <button class="preset-btn" onclick="setAmount(500)">500</button>
+        <!-- Header -->
+        <header class="sticky top-0 z-40 w-full glass-panel border-b border-white/10">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+                
+                <a href="#" onclick="playAudio('click');" class="flex items-center gap-3 group">
+                    <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-bamboo-500 to-emerald-700 flex items-center justify-center shadow-lg group-hover:scale-105 transition-transform">
+                        <i class="fa-solid fa-tree text-2xl text-white"></i>
+                    </div>
+                    <div>
+                        <span class="font-display font-black text-2xl tracking-wider text-white flex items-center gap-1">
+                            BAMBO<span class="text-bamboo-400">WORLD</span>
+                        </span>
+                        <span class="text-xs text-gray-400 tracking-widest uppercase block -mt-1 font-semibold">MINECRAFT SERVER</span>
+                    </div>
+                </a>
+
+                <div class="flex items-center gap-3 sm:gap-4">
+                    <button id="soundToggleBtn" onclick="toggleSound();" class="p-2.5 rounded-xl bg-gray-800/80 hover:bg-gray-700 text-gray-300 hover:text-white transition-all border border-white/5 flex items-center justify-center" title="Звуки">
+                        <i id="soundIcon" class="fa-solid fa-volume-high text-lg text-bamboo-400"></i>
+                    </button>
+
+                    <a href="https://discord.gg/yBZRPWv4jM" target="_blank" onclick="playAudio('click');" class="hidden sm:flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#5865F2]/20 hover:bg-[#5865F2] text-[#5865F2] hover:text-white border border-[#5865F2]/40 font-medium text-sm transition-all duration-300">
+                        <i class="fa-brands fa-discord text-lg"></i>
+                        <span>Discord</span>
+                    </a>
+
+                    <div class="flex items-center bg-gray-800/90 rounded-xl p-1 border border-white/10">
+                        <button id="langUA" onclick="setLanguage('ua');" class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all bg-bamboo-500 text-white shadow">
+                            UA 🇺🇦
+                        </button>
+                        <button id="langRU" onclick="setLanguage('ru');" class="px-3 py-1.5 rounded-lg text-xs font-bold text-gray-400 hover:text-white transition-all">
+                            RU 🌐
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-12">
+
+            <!-- Hero Section -->
+            <section class="relative rounded-3xl overflow-hidden glass-panel p-6 sm:p-10 border border-bamboo-500/20 glow-green">
+                <div class="absolute -right-20 -bottom-20 w-80 h-80 bg-bamboo-500/10 rounded-full blur-3xl pointer-events-none"></div>
+                <div class="absolute -left-20 -top-20 w-80 h-80 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+                <div class="relative z-10 flex flex-col md:flex-row items-center justify-between gap-8">
+                    <div class="space-y-4 text-center md:text-left max-w-2xl">
+                        <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-bamboo-500/10 border border-bamboo-500/30 text-bamboo-400 text-xs font-bold uppercase tracking-wider">
+                            <span class="relative flex h-2 w-2">
+                              <span class="online-ping absolute inline-flex h-full w-full rounded-full bg-bamboo-400 opacity-75"></span>
+                              <span class="relative inline-flex rounded-full h-2 w-2 bg-bamboo-500"></span>
+                            </span>
+                            <span data-i18n="serverStatus">СЕРВЕР ПРАЦЮЄ • ВЕРСІЯ 1.16.5 - 1.20.x</span>
+                        </div>
+
+                        <h1 class="text-3xl sm:text-5xl font-black font-display text-white leading-tight">
+                            <span data-i18n="heroTitle">ОТРИМАЙ МАКСИМУМ ВІД ГРИ НА</span> <br/>
+                            <span class="text-transparent bg-clip-text bg-gradient-to-r from-bamboo-400 via-emerald-300 to-green-500 text-glow-green">BAMBOWORLD</span>
+                        </h1>
+
+                        <p class="text-gray-300 text-sm sm:text-base leading-relaxed" data-i18n="heroDesc">
+                            Обирай привілегію або купуй донат-валюту «Бамбук» для купівлі унікальних предметів прямо в грі!
+                        </p>
+
+                        <div class="pt-2 flex flex-wrap gap-4 justify-center md:justify-start">
+                            <a href="#store" onclick="playAudio('click');" class="px-6 py-3.5 rounded-xl bg-gradient-to-r from-bamboo-500 to-emerald-600 text-white font-bold text-sm shadow-lg shadow-bamboo-500/30 hover:shadow-bamboo-500/50 hover:scale-105 active:scale-95 transition-all flex items-center gap-2">
+                                <i class="fa-solid fa-cart-shopping"></i>
+                                <span data-i18n="heroBuyBtn">Перейти до покупок</span>
+                            </a>
+                            <a href="https://discord.gg/yBZRPWv4jM" target="_blank" onclick="playAudio('click');" class="px-6 py-3.5 rounded-xl bg-gray-800 hover:bg-gray-700 text-gray-200 border border-white/10 font-bold text-sm hover:scale-105 active:scale-95 transition-all flex items-center gap-2">
+                                <i class="fa-brands fa-discord text-lg text-[#5865F2]"></i>
+                                <span>Discord</span>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Server IP Card -->
+                    <div class="w-full md:w-auto flex-shrink-0">
+                        <div class="glass-panel p-6 rounded-2xl border border-white/10 flex flex-col items-center text-center space-y-4 max-w-xs mx-auto">
+                            <div class="w-16 h-16 rounded-2xl bg-bamboo-500/20 border border-bamboo-500/40 flex items-center justify-center text-bamboo-400 text-2xl">
+                                <i class="fa-solid fa-server"></i>
+                            </div>
+                            <div>
+                                <div class="text-xs text-gray-400 font-semibold uppercase tracking-wider" data-i18n="ipTitle">IP ДЛЯ ПІДКЛЮЧЕННЯ</div>
+                                <div class="font-mono text-base font-bold text-white mt-1 select-all bg-black/40 px-3 py-1.5 rounded-lg border border-white/5">
+                                    tex.ravenhost.space:18510
+                                </div>
+                            </div>
+                            <button onclick="copyServerIP();" class="w-full py-2.5 px-4 rounded-xl bg-bamboo-500/20 hover:bg-bamboo-500 text-bamboo-400 hover:text-white border border-bamboo-500/40 font-bold text-xs uppercase tracking-wider transition-all duration-300 flex items-center justify-center gap-2 active:scale-95">
+                                <i class="fa-regular fa-copy"></i>
+                                <span data-i18n="copyIpBtn">СКОПІЮВАТИ IP</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Store Tabs & Items -->
+            <section id="store" class="space-y-6">
+                <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-white/10 pb-4">
+                    <div>
+                        <h2 class="text-2xl sm:text-3xl font-black font-display text-white flex items-center gap-3">
+                            <i class="fa-solid fa-gem text-bamboo-400"></i>
+                            <span data-i18n="shopTitle">МАГАЗИН ДОНАТУ</span>
+                        </h2>
+                        <p class="text-gray-400 text-sm mt-1" data-i18n="shopSubtitle">Обирай привілегії або купуй валюту для сервера</p>
+                    </div>
+
+                    <!-- Category Switcher Tabs -->
+                    <div class="flex bg-gray-900/90 p-1.5 rounded-2xl border border-white/10 gap-1">
+                        <button id="tabRanks" onclick="switchCategory('ranks');" class="px-5 py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider transition-all bg-bamboo-500 text-white shadow-lg flex items-center gap-2">
+                            <i class="fa-solid fa-crown"></i>
+                            <span data-i18n="tabRanks">Привілегії</span>
+                        </button>
+                        <button id="tabCurrency" onclick="switchCategory('currency');" class="px-5 py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider transition-all text-gray-400 hover:text-white flex items-center gap-2">
+                            <i class="fa-solid fa-coins text-amber-400"></i>
+                            <span data-i18n="tabCurrency">Валюта Бамбук</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Products Grid (Ranks) -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="ranksGrid">
+                    <!-- Cards injected via JS -->
+                </div>
+
+                <!-- Currency Purchase Card (Hidden by default) -->
+                <div id="currencySection" class="hidden glass-panel rounded-3xl p-6 sm:p-10 border border-bamboo-500/30 glow-green max-w-2xl mx-auto space-y-6">
+                    <div class="flex items-center gap-4 border-b border-white/10 pb-6">
+                        <div class="w-16 h-16 rounded-2xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-400 text-3xl">
+                            <i class="fa-solid fa-coins"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-2xl font-black font-display text-white">КУПІВЛЯ ВАЛЮТИ «БАМБУК»</h3>
+                            <p class="text-xs text-gray-400 mt-1">1 Бамбук = 1 ГРН. Використовуй валюту на сервері для покупок у магазині!</p>
+                        </div>
+                    </div>
+
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-gray-300 mb-2">
+                                Вкажіть кількість Бамбука
+                            </label>
+                            <input type="number" id="currencyAmount" min="1" value="50" oninput="updateCurrencyPrice();" class="w-full px-4 py-3.5 bg-gray-900 border border-white/10 rounded-xl text-white font-mono text-lg font-bold focus:outline-none focus:border-bamboo-500 transition-all">
+                        </div>
+
+                        <!-- Quick Presets -->
+                        <div class="flex flex-wrap gap-2">
+                            <button onclick="setCurrencyPreset(10);" class="flex-1 py-2 bg-gray-800 hover:bg-bamboo-500/20 hover:border-bamboo-500/50 border border-white/10 rounded-lg text-xs font-bold transition-all">10</button>
+                            <button onclick="setCurrencyPreset(50);" class="flex-1 py-2 bg-gray-800 hover:bg-bamboo-500/20 hover:border-bamboo-500/50 border border-white/10 rounded-lg text-xs font-bold transition-all">50</button>
+                            <button onclick="setCurrencyPreset(100);" class="flex-1 py-2 bg-gray-800 hover:bg-bamboo-500/20 hover:border-bamboo-500/50 border border-white/10 rounded-lg text-xs font-bold transition-all">100</button>
+                            <button onclick="setCurrencyPreset(250);" class="flex-1 py-2 bg-gray-800 hover:bg-bamboo-500/20 hover:border-bamboo-500/50 border border-white/10 rounded-lg text-xs font-bold transition-all">250</button>
+                            <button onclick="setCurrencyPreset(500);" class="flex-1 py-2 bg-gray-800 hover:bg-bamboo-500/20 hover:border-bamboo-500/50 border border-white/10 rounded-lg text-xs font-bold transition-all">500</button>
+                        </div>
+
+                        <div class="pt-4 border-t border-white/10 flex items-center justify-between">
+                            <span class="text-sm text-gray-400 font-medium">Сума до сплати:</span>
+                            <span id="currencyTotalPrice" class="text-3xl font-black font-display text-bamboo-400">50 ГРН</span>
+                        </div>
+
+                        <button onclick="openCurrencyModal();" class="w-full py-4 rounded-xl bg-gradient-to-r from-bamboo-500 to-emerald-600 text-white font-black font-display text-base tracking-wider shadow-lg hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-cart-shopping"></i>
+                            <span>КУПИТИ ВАЛЮТУ</span>
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Recent Purchases Feed -->
+            <section class="glass-panel rounded-2xl p-6 border border-white/10 space-y-4">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-lg font-bold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-clock-rotate-left text-bamboo-400"></i>
+                        <span data-i18n="recentPurchases">Останні Покупки</span>
+                    </h3>
+                    <span class="text-xs text-gray-400 flex items-center gap-1">
+                        <span class="w-2 h-2 rounded-full bg-bamboo-400 inline-block animate-pulse"></span>
+                        <span>Авто-оновлення</span>
+                    </span>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4" id="recentPurchasesFeed">
+                    <!-- Dynamic Items -->
+                </div>
+            </section>
+
+            <!-- FAQ -->
+            <section class="space-y-6">
+                <div class="text-center max-w-xl mx-auto space-y-2">
+                    <h2 class="text-2xl sm:text-3xl font-black font-display text-white" data-i18n="faqTitle">ЧАСТІ ПИТАННЯ</h2>
+                    <p class="text-gray-400 text-sm" data-i18n="faqSubtitle">Відповіді на популярні питання гравців</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-4xl mx-auto" id="faqAccordion"></div>
+            </section>
+
+        </main>
+
+        <footer class="mt-auto glass-panel border-t border-white/10 py-8">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-6">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-bamboo-500/20 flex items-center justify-center text-bamboo-400 font-bold">
+                        <i class="fa-solid fa-tree"></i>
+                    </div>
+                    <div>
+                        <div class="font-display font-bold text-white text-base">BamboWorld</div>
+                        <div class="text-xs text-gray-400">© 2026 BamboWorld. Всі права захищені.</div>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-6 text-sm text-gray-400">
+                    <a href="https://discord.gg/yBZRPWv4jM" target="_blank" onclick="playAudio('click');" class="hover:text-bamboo-400 transition-colors flex items-center gap-2">
+                        <i class="fa-brands fa-discord"></i> Discord
+                    </a>
+                    <span class="text-gray-700">•</span>
+                    <span class="text-xs text-gray-500">Not affiliated with Mojang Studios</span>
+                </div>
+            </div>
+        </footer>
+
+    </div>
+
+    <!-- Checkout Modal -->
+    <div id="checkoutModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md hidden">
+        <div class="glass-panel w-full max-w-lg rounded-3xl border border-bamboo-500/30 shadow-2xl p-6 sm:p-8 relative animate-modal">
+            
+            <button onclick="closeCheckoutModal();" class="absolute top-5 right-5 w-9 h-9 rounded-full bg-gray-800 hover:bg-gray-700 text-gray-400 hover:text-white flex items-center justify-center transition-all">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+
+            <div class="flex items-center gap-4 border-b border-white/10 pb-5">
+                <div id="modalRoleIcon" class="w-14 h-14 rounded-2xl bg-bamboo-500/20 border border-bamboo-500/40 flex items-center justify-center text-bamboo-400 text-2xl font-bold">
+                    <i class="fa-solid fa-gem"></i>
+                </div>
+                <div>
+                    <span class="text-xs font-bold text-bamboo-400 uppercase tracking-wider">ОФОРМЛЕННЯ ПОКУПКИ</span>
+                    <h3 id="modalRoleName" class="text-2xl font-black font-display text-white">Role Name</h3>
+                </div>
+            </div>
+
+            <div class="mt-6 space-y-5">
+                <!-- Nickname Input with Head Preview -->
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-gray-300 mb-2">
+                        ІГРОВИЙ НІКНЕЙМ
+                    </label>
+                    <div class="relative flex items-center">
+                        <div class="absolute left-3 w-10 h-10 rounded-lg overflow-hidden bg-gray-800 border border-white/10 flex items-center justify-center flex-shrink-0">
+                            <img id="avatarPreview" src="https://mc-heads.net/avatar/Steve/100" alt="Avatar" class="w-full h-full object-cover">
+                        </div>
+                        <input type="text" id="playerNickname" oninput="updateAvatarPreview(this.value);" placeholder="Введіть свій нік..." class="w-full pl-16 pr-4 py-3 bg-gray-900 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-bamboo-500 font-medium text-sm transition-all">
+                    </div>
+                </div>
+
+                <!-- Promo Code -->
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-gray-300 mb-2">
+                        ПРОМОКОД
+                    </label>
+                    <div class="flex gap-2">
+                        <input type="text" id="promoInput" placeholder="Введіть промокод" class="w-full px-4 py-3 bg-gray-900 border border-white/10 rounded-xl text-white uppercase tracking-wider placeholder-gray-500 focus:outline-none focus:border-bamboo-500 font-mono text-sm transition-all">
+                        <button onclick="applyPromoCode();" class="px-5 py-3 rounded-xl bg-gray-800 hover:bg-gray-700 text-white font-bold text-xs uppercase tracking-wider border border-white/10 transition-all flex-shrink-0 active:scale-95">
+                            ЗАСТОСУВАТИ
+                        </button>
+                    </div>
+                    <div id="promoMessage" class="text-xs mt-1 hidden font-semibold"></div>
+                </div>
+
+                <!-- Price Breakdown & Redirect Button -->
+                <div class="pt-4 border-t border-white/10 space-y-4">
+                    <div class="flex items-center justify-between">
+                        <span class="text-sm text-gray-400 font-medium">До сплати:</span>
+                        <div class="text-right">
+                            <span id="oldPriceDisplay" class="text-xs text-gray-500 line-through mr-2"></span>
+                            <span id="finalPriceDisplay" class="text-2xl font-black font-display text-bamboo-400">0 ГРН</span>
+                        </div>
+                    </div>
+
+                    <a id="minepayLink" href="https://minepay.store/bamboworld" target="_blank" onclick="playAudio('pay');" class="w-full py-4 rounded-xl bg-gradient-to-r from-bamboo-500 to-emerald-600 text-white font-black font-display text-base tracking-wider shadow-lg shadow-bamboo-500/30 hover:shadow-bamboo-500/50 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2 text-center">
+                        <i class="fa-solid fa-lock text-sm"></i>
+                        <span>ПЕРЕЙТИ ДО ОПЛАТИ (MINEPAY)</span>
+                    </a>
+                </div>
+            </div>
+
         </div>
     </div>
 
-    <!-- Підсумок ціни -->
-    <div class="total-box">
-        <span class="total-label">До сплати:</span>
-        <div>
-            <span id="final-price" class="total-amount">50</span>
-            <span style="color: #10b981; font-weight: 800;">ГРН</span>
-        </div>
-    </div>
+    <script>
+        let currentLang = 'ua';
+        let soundEnabled = true;
+        let selectedProduct = null;
+        let appliedDiscount = 0;
+        let activeCategory = 'ranks';
+        let audioCtx = null;
 
-    <!-- Кнопка перехода на MinePay -->
-    <a href="https://minepay.store/bamboworld" target="_blank" class="btn-buy">
-        ⚡ ПЕРЕЙТИ ДО ОПЛАТИ
-    </a>
-</div>
+        const donationItems = [
+            {
+                id: 'premium',
+                name: 'PREMIUM',
+                price: 50,
+                oldPrice: 100,
+                icon: 'fa-crown',
+                colorTheme: 'from-amber-500/20 to-amber-700/10 border-amber-500/40 text-amber-400',
+                btnBg: 'bg-amber-500 hover:bg-amber-600 text-black',
+                perks: {
+                    ua: ['Політ (/fly)', 'Одягнути блок на голову (/hat)', '5 точок дому (/sethome)', 'Набір /kit Premium', 'Збереження досвіду при смерті'],
+                    ru: ['Полет (/fly)', 'Надеть блок на голову (/hat)', '5 точек дома (/sethome)', 'Набор /kit Premium', 'Сохранение опыта при смерти']
+                }
+            },
+            {
+                id: 'bamboo',
+                name: 'BAMBOO',
+                price: 100,
+                oldPrice: 200,
+                icon: 'fa-leaf',
+                colorTheme: 'from-bamboo-500/20 to-green-700/10 border-bamboo-500/40 text-bamboo-400',
+                btnBg: 'bg-bamboo-500 hover:bg-bamboo-600 text-white',
+                perks: {
+                    ua: ['Всі можливості Premium', 'Годування (/feed) та лікування (/heal)', '8 точок дому', 'Набір /kit Bamboo', 'Віртуальний верстак (/workbench)'],
+                    ru: ['Все возможности Premium', 'Кормление (/feed) и лечение (/heal)', '8 точек дома', 'Набор /kit Bamboo', 'Виртуальный верстак (/workbench)']
+                }
+            },
+            {
+                id: 'summer',
+                name: 'SUMMER',
+                price: 150,
+                oldPrice: 300,
+                icon: 'fa-sun',
+                colorTheme: 'from-orange-500/20 to-amber-600/10 border-orange-500/40 text-orange-400',
+                btnBg: 'bg-orange-500 hover:bg-orange-600 text-white',
+                perks: {
+                    ua: ['Всі можливості Bamboo', 'Ексклюзивний літній /kit Summer', 'Персональна зміна погоди (/ptime)', '15 точок дому', 'Партикли за гравцем'],
+                    ru: ['Все возможности Bamboo', 'Эксклюзивный летний /kit Summer', 'Персональная смена погоды (/ptime)', '15 точек дома', 'Партиклы за игроком']
+                }
+            },
+            {
+                id: 'bilder',
+                name: 'BILDER',
+                price: 200,
+                oldPrice: 400,
+                icon: 'fa-hammer',
+                colorTheme: 'from-purple-500/20 to-indigo-700/10 border-purple-500/40 text-purple-400',
+                btnBg: 'bg-purple-500 hover:bg-purple-600 text-white',
+                perks: {
+                    ua: ['Повний комплект будівельника', 'Прискорення руху (/speed)', 'Детектор гравців (/near)', 'Безліч точок дому', 'Набір /kit Bilder'],
+                    ru: ['Полный комплект строителя', 'Ускорение движения (/speed)', 'Детектор игроков (/near)', 'Много точек дома', 'Набор /kit Bilder']
+                }
+            }
+        ];
 
-<script>
-    let currentType = 'rank';
+        const translations = {
+            ua: {
+                serverStatus: "СЕРВЕР ПРАЦЮЄ • ВЕРСІЯ 1.16.5 - 1.20.x",
+                heroTitle: "ОТРИМАЙ МАКСИМУМ ВІД ГРИ НА",
+                heroDesc: "Унікальний сервер з особливою атмосферою, збалансованою економікою та дружнім ком'юніті. Обирай привілегію або купуй валюту!",
+                heroBuyBtn: "Перейти до покупок",
+                ipTitle: "IP ДЛЯ ПІДКЛЮЧЕННЯ",
+                copyIpBtn: "СКОПІЮВАТИ IP",
+                shopTitle: "МАГАЗИН ДОНАТУ",
+                shopSubtitle: "Обирай привілегії або купуй валюту для сервера",
+                tabRanks: "Привілегії",
+                tabCurrency: "Валюта Бамбук",
+                buyBtn: "Придбати",
+                recentPurchases: "Останні Покупки",
+                faqTitle: "ЧАСТІ ПИТАННЯ",
+                faqSubtitle: "Відповіді на популярні питання гравців",
+                toastCopied: "IP скопійовано: tex.ravenhost.space:18510",
+                toastPromoSuccess: "Промокод активовано!",
+                toastPromoInvalid: "Недійсний промокод!"
+            },
+            ru: {
+                serverStatus: "СЕРВЕР РАБОТАЕТ • ВЕРСИЯ 1.16.5 - 1.20.x",
+                heroTitle: "ПОЛУЧИ МАКСИМУМ ОТ ИГРЫ НА",
+                heroDesc: "Уникальный сервер с особой атмосферой, сбалансированной экономикой и дружным комьюнити. Выбирай привилегию или покупай валюту!",
+                heroBuyBtn: "Перейти к покупкам",
+                ipTitle: "IP ДЛЯ ПОДКЛЮЧЕНИЯ",
+                copyIpBtn: "СКОПИРОВАТЬ IP",
+                shopTitle: "МАГАЗИН ДОНАТА",
+                shopSubtitle: "Выбирай привилегии или покупай валюту для сервера",
+                tabRanks: "Привилегии",
+                tabCurrency: "Валюта Бамбук",
+                buyBtn: "Купить",
+                recentPurchases: "Последние Покупки",
+                faqTitle: "ЧАСТЫЕ ВОПРОСЫ",
+                faqSubtitle: "Ответы на популярные вопросы игроков",
+                toastCopied: "IP скопирован: tex.ravenhost.space:18510",
+                toastPromoSuccess: "Промокод активирован!",
+                toastPromoInvalid: "Недействительный промокод!"
+            }
+        };
 
-    function selectType(type) {
-        currentType = type;
-        const rankBtn = document.getElementById('btn-rank');
-        const currBtn = document.getElementById('btn-currency');
-        const rankSec = document.getElementById('ranks-section');
-        const currSec = document.getElementById('currency-section');
+        const faqData = [
+            {
+                q: { ua: "Як швидко видається донат після оплати?", ru: "Как быстро выдается донат после оплаты?" },
+                a: { ua: "Привілегія або валюта видається автоматично протягом 10-30 секунд після підтвердження платежу.", ru: "Привилегия или валюта выдается автоматически в течение 10-30 секунд после подтверждения платежа." }
+            },
+            {
+                q: { ua: "Що робити, якщо донат не прийшов?", ru: "Что делать, если донат не пришел?" },
+                a: { ua: "Зверніться у наш Discord (discord.gg/yBZRPWv4jM) з чеком оплати та ніком, і ми миттєво вирішимо питання.", ru: "Обратитесь в наш Discord (discord.gg/yBZRPWv4jM) с чеком оплаты и ником, и мы мгновенно решим вопрос." }
+            }
+        ];
 
-        if (type === 'rank') {
-            rankBtn.classList.add('active');
-            currBtn.classList.remove('active');
-            rankSec.style.display = 'block';
-            currSec.style.display = 'none';
-        } else {
-            currBtn.classList.add('active');
-            rankBtn.classList.remove('active');
-            rankSec.style.display = 'none';
-            currSec.style.display = 'block';
+        const recentPurchasesSeed = [
+            { nick: "VanyaPro", role: "BAMBOO", time: "2 хв тому" },
+            { nick: "DarkKnight", role: "SUMMER", time: "5 хв тому" },
+            { nick: "MineCraft_God", role: "PREMIUM", time: "12 хв тому" },
+            { nick: "BuilderBob", role: "BILDER", time: "18 хв тому" }
+        ];
+
+        function initAudioContext() {
+            if (!audioCtx) {
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                audioCtx = new AudioContext();
+            }
         }
-        updatePrice();
-    }
 
-    function updatePrice() {
-        const priceDisplay = document.getElementById('final-price');
-        if (currentType === 'rank') {
-            const rankSelect = document.getElementById('rank-select');
-            priceDisplay.innerText = rankSelect.value;
-        } else {
-            const input = document.getElementById('bamboo-count');
-            let val = parseInt(input.value) || 0;
-            if (val < 0) val = 0;
-            priceDisplay.innerText = val;
+        function playAudio(type) {
+            if (!soundEnabled) return;
+            try {
+                initAudioContext();
+                if (audioCtx.state === 'suspended') audioCtx.resume();
+                const now = audioCtx.currentTime;
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+
+                if (type === 'click') {
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(400, now);
+                    osc.frequency.exponentialRampToValueAtTime(120, now + 0.08);
+                    gain.gain.setValueAtTime(0.15, now);
+                    gain.gain.linearRampToValueAtTime(0, now + 0.08);
+                    osc.start(now);
+                    osc.stop(now + 0.08);
+                } else if (type === 'promo') {
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(587, now);
+                    osc.frequency.setValueAtTime(880, now + 0.1);
+                    gain.gain.setValueAtTime(0.2, now);
+                    gain.gain.linearRampToValueAtTime(0, now + 0.25);
+                    osc.start(now);
+                    osc.stop(now + 0.25);
+                } else if (type === 'pay') {
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(523, now);
+                    osc.frequency.setValueAtTime(659, now + 0.1);
+                    osc.frequency.setValueAtTime(783, now + 0.2);
+                    gain.gain.setValueAtTime(0.2, now);
+                    gain.gain.linearRampToValueAtTime(0, now + 0.4);
+                    osc.start(now);
+                    osc.stop(now + 0.4);
+                }
+            } catch (e) {}
         }
-    }
 
-    function setAmount(amount) {
-        document.getElementById('bamboo-count').value = amount;
-        updatePrice();
-    }
-</script>
+        function toggleSound() {
+            soundEnabled = !soundEnabled;
+            const icon = document.getElementById('soundIcon');
+            icon.className = soundEnabled ? 'fa-solid fa-volume-high text-lg text-bamboo-400' : 'fa-solid fa-volume-xmark text-lg text-gray-500';
+            if (soundEnabled) playAudio('click');
+        }
 
+        function renderProducts() {
+            const grid = document.getElementById('ranksGrid');
+            grid.innerHTML = '';
+
+            donationItems.forEach(item => {
+                const card = document.createElement('div');
+                card.className = `glass-panel glass-panel-hover rounded-2xl p-6 border flex flex-col justify-between relative overflow-hidden ${item.colorTheme.includes('border') ? item.colorTheme.split(' ').find(c => c.startsWith('border')) : 'border-white/10'}`;
+
+                const perksList = item.perks[currentLang].map(p => `
+                    <li class="flex items-start gap-2.5 text-xs text-gray-300">
+                        <i class="fa-solid fa-check text-bamboo-400 mt-0.5 flex-shrink-0"></i>
+                        <span>${p}</span>
+                    </li>
+                `).join('');
+
+                card.innerHTML = `
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between">
+                            <div class="w-12 h-12 rounded-xl bg-gradient-to-br ${item.colorTheme} flex items-center justify-center text-xl shadow">
+                                <i class="fa-solid ${item.icon}"></i>
+                            </div>
+                            <div class="text-right">
+                                <span class="text-xs text-gray-500 line-through block">${item.oldPrice} ГРН</span>
+                                <span class="text-2xl font-black font-display text-white">${item.price} ГРН</span>
+                            </div>
+                        </div>
+
+                        <div>
+                            <h3 class="text-xl font-black font-display text-white tracking-wide">${item.name}</h3>
+                        </div>
+
+                        <ul class="space-y-2.5 pt-2 border-t border-white/10">
+                            ${perksList}
+                        </ul>
+                    </div>
+
+                    <div class="pt-6">
+                        <button onclick="openCheckoutModal('${item.id}');" class="w-full py-3 px-4 rounded-xl font-bold text-xs uppercase tracking-wider ${item.btnBg} shadow-md transition-all active:scale-95 flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-cart-shopping"></i>
+                            <span>${translations[currentLang].buyBtn}</span>
+                        </button>
+                    </div>
+                `;
+
+                grid.appendChild(card);
+            });
+        }
+
+        function switchCategory(cat) {
+            playAudio('click');
+            activeCategory = cat;
+            const tabRanks = document.getElementById('tabRanks');
+            const tabCurr = document.getElementById('tabCurrency');
+            const ranksGrid = document.getElementById('ranksGrid');
+            const currSec = document.getElementById('currencySection');
+
+            if (cat === 'ranks') {
+                tabRanks.className = "px-5 py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider transition-all bg-bamboo-500 text-white shadow-lg flex items-center gap-2";
+                tabCurr.className = "px-5 py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider transition-all text-gray-400 hover:text-white flex items-center gap-2";
+                ranksGrid.classList.remove('hidden');
+                currSec.classList.add('hidden');
+            } else {
+                tabCurr.className = "px-5 py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider transition-all bg-bamboo-500 text-white shadow-lg flex items-center gap-2";
+                tabRanks.className = "px-5 py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider transition-all text-gray-400 hover:text-white flex items-center gap-2";
+                ranksGrid.classList.add('hidden');
+                currSec.classList.remove('hidden');
+            }
+        }
+
+        function updateCurrencyPrice() {
+            const amount = parseInt(document.getElementById('currencyAmount').value) || 0;
+            document.getElementById('currencyTotalPrice').innerText = `${amount} ГРН`;
+        }
+
+        function setCurrencyPreset(val) {
+            playAudio('click');
+            document.getElementById('currencyAmount').value = val;
+            updateCurrencyPrice();
+        }
+
+        function openCurrencyModal() {
+            const amount = parseInt(document.getElementById('currencyAmount').value) || 1;
+            selectedProduct = {
+                id: 'bamboo_currency',
+                name: `ВАЛЮТА БАМБУК (${amount} шт.)`,
+                price: amount,
+                icon: 'fa-coins'
+            };
+            openModalUI();
+        }
+
+        function openCheckoutModal(roleId) {
+            selectedProduct = donationItems.find(i => i.id === roleId);
+            openModalUI();
+        }
+
+        function openModalUI() {
+            playAudio('click');
+            appliedDiscount = 0;
+            document.getElementById('promoInput').value = '';
+            document.getElementById('promoMessage').className = 'text-xs mt-1 hidden font-semibold';
+
+            document.getElementById('modalRoleName').innerText = selectedProduct.name;
+            document.getElementById('modalRoleIcon').innerHTML = `<i class="fa-solid ${selectedProduct.icon}"></i>`;
+
+            updatePriceDisplay();
+            document.getElementById('checkoutModal').classList.remove('hidden');
+        }
+
+        function closeCheckoutModal() {
+            playAudio('click');
+            document.getElementById('checkoutModal').classList.add('hidden');
+        }
+
+        function updateAvatarPreview(nick) {
+            const avatar = document.getElementById('avatarPreview');
+            const trimmed = nick.trim();
+            avatar.src = trimmed.length > 0 ? `https://mc-heads.net/avatar/${trimmed}/100` : `https://mc-heads.net/avatar/Steve/100`;
+        }
+
+        function applyPromoCode() {
+            const input = document.getElementById('promoInput').value.trim().toUpperCase();
+            const msg = document.getElementById('promoMessage');
+
+            if (input === 'BAMBOO' || input === 'REBAYT') {
+                playAudio('promo');
+                appliedDiscount = 15;
+                msg.textContent = `✓ Промокод '${input}' активовано (-15%)!`;
+                msg.className = "text-xs mt-1 font-semibold text-bamboo-400 block";
+                showToast(translations[currentLang].toastPromoSuccess, "success");
+            } else {
+                playAudio('click');
+                appliedDiscount = 0;
+                msg.textContent = `✕ ${translations[currentLang].toastPromoInvalid}`;
+                msg.className = "text-xs mt-1 font-semibold text-rose-500 block";
+            }
+
+            updatePriceDisplay();
+        }
+
+        function updatePriceDisplay() {
+            if (!selectedProduct) return;
+            const basePrice = selectedProduct.price;
+            const oldDisplay = document.getElementById('oldPriceDisplay');
+            const finalDisplay = document.getElementById('finalPriceDisplay');
+
+            if (appliedDiscount > 0) {
+                const discounted = Math.round(basePrice * (1 - appliedDiscount / 100));
+                oldDisplay.innerText = `${basePrice} ГРН`;
+                finalDisplay.innerText = `${discounted} ГРН`;
+            } else {
+                oldDisplay.innerText = '';
+                finalDisplay.innerText = `${basePrice} ГРН`;
+            }
+        }
+
+        function copyServerIP() {
+            playAudio('click');
+            navigator.clipboard.writeText("tex.ravenhost.space:18510");
+            showToast(translations[currentLang].toastCopied, "success");
+        }
+
+        function showToast(message, type = "info") {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `pointer-events-auto px-4 py-3 rounded-xl glass-panel border font-medium text-xs shadow-xl flex items-center gap-3 transition-all duration-300 transform translate-y-2 opacity-0 ${type === 'success' ? 'border-bamboo-500/50 text-bamboo-400' : 'border-rose-500/50 text-rose-400'}`;
+            toast.innerHTML = `<i class="fa-solid ${type === 'success' ? 'fa-circle-check' : 'fa-circle-exclamation'} text-base"></i><span>${message}</span>`;
+            
+            container.appendChild(toast);
+            setTimeout(() => toast.classList.remove('translate-y-2', 'opacity-0'), 10);
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-y-[-10px]');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        function renderRecentPurchases() {
+            const container = document.getElementById('recentPurchasesFeed');
+            container.innerHTML = '';
+            recentPurchasesSeed.forEach(item => {
+                const div = document.createElement('div');
+                div.className = "p-3 rounded-xl bg-gray-900/60 border border-white/5 flex items-center gap-3";
+                div.innerHTML = `
+                    <img src="https://mc-heads.net/avatar/${item.nick}/40" onerror="this.src='https://mc-heads.net/avatar/Steve/40'" class="w-9 h-9 rounded-lg bg-gray-800" alt="${item.nick}">
+                    <div class="overflow-hidden">
+                        <div class="text-xs font-bold text-white truncate">${item.nick}</div>
+                        <div class="text-[10px] text-bamboo-400 font-semibold">${item.role} • <span class="text-gray-500">${item.time}</span></div>
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function renderFAQ() {
+            const accordion = document.getElementById('faqAccordion');
+            accordion.innerHTML = '';
+            faqData.forEach((item, index) => {
+                const itemEl = document.createElement('div');
+                itemEl.className = "glass-panel rounded-xl border border-white/10 overflow-hidden";
+                itemEl.innerHTML = `
+                    <button onclick="toggleFaq(${index});" class="w-full p-4 text-left font-bold text-sm text-white flex items-center justify-between gap-4 hover:bg-white/5 transition-colors">
+                        <span>${item.q[currentLang]}</span>
+                        <i id="faqIcon-${index}" class="fa-solid fa-chevron-down text-xs text-bamboo-400 transition-transform duration-300"></i>
+                    </button>
+                    <div id="faqAnswer-${index}" class="px-4 pb-4 text-xs text-gray-400 leading-relaxed hidden">
+                        ${item.a[currentLang]}
+                    </div>
+                `;
+                accordion.appendChild(itemEl);
+            });
+        }
+
+        function toggleFaq(index) {
+            playAudio('click');
+            const ans = document.getElementById(`faqAnswer-${index}`);
+            const icon = document.getElementById(`faqIcon-${index}`);
+            ans.classList.toggle('hidden');
+            icon.style.transform = ans.classList.contains('hidden') ? 'rotate(0deg)' : 'rotate(180deg)';
+        }
+
+        function setLanguage(lang) {
+            playAudio('click');
+            currentLang = lang;
+            document.getElementById('langUA').className = lang === 'ua' ? 'px-3 py-1.5 rounded-lg text-xs font-bold transition-all bg-bamboo-500 text-white shadow' : 'px-3 py-1.5 rounded-lg text-xs font-bold text-gray-400 hover:text-white transition-all';
+            document.getElementById('langRU').className = lang === 'ru' ? 'px-3 py-1.5 rounded-lg text-xs font-bold transition-all bg-bamboo-500 text-white shadow' : 'px-3 py-1.5 rounded-lg text-xs font-bold text-gray-400 hover:text-white transition-all';
+
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (translations[lang][key]) el.innerText = translations[lang][key];
+            });
+
+            renderProducts();
+            renderFAQ();
+        }
+
+        function initCanvas() {
+            const canvas = document.getElementById('bgCanvas');
+            const ctx = canvas.getContext('2d');
+            let width = canvas.width = window.innerWidth;
+            let height = canvas.height = window.innerHeight;
+
+            window.addEventListener('resize', () => {
+                width = canvas.width = window.innerWidth;
+                height = canvas.height = window.innerHeight;
+            });
+
+            const particles = [];
+            for (let i = 0; i < 45; i++) {
+                particles.push({
+                    x: Math.random() * width,
+                    y: Math.random() * height,
+                    size: Math.random() * 3 + 1,
+                    speedY: -(Math.random() * 0.8 + 0.2),
+                    speedX: Math.random() * 0.4 - 0.2,
+                    opacity: Math.random() * 0.5 + 0.2,
+                    isLeaf: Math.random() > 0.6,
+                    angle: Math.random() * Math.PI * 2,
+                    rotSpeed: (Math.random() - 0.5) * 0.02
+                });
+            }
+
+            function animate() {
+                ctx.clearRect(0, 0, width, height);
+                particles.forEach(p => {
+                    p.y += p.speedY;
+                    p.x += p.speedX;
+                    p.angle += p.rotSpeed;
+                    if (p.y < -10) {
+                        p.y = height + 10;
+                        p.x = Math.random() * width;
+                    }
+
+                    ctx.save();
+                    ctx.translate(p.x, p.y);
+                    ctx.rotate(p.angle);
+
+                    if (p.isLeaf) {
+                        ctx.beginPath();
+                        ctx.moveTo(0, -p.size * 3);
+                        ctx.quadraticCurveTo(p.size * 2, 0, 0, p.size * 3);
+                        ctx.quadraticCurveTo(-p.size * 2, 0, 0, -p.size * 3);
+                        ctx.fillStyle = `rgba(34, 197, 94, ${p.opacity})`;
+                        ctx.fill();
+                    } else {
+                        ctx.beginPath();
+                        ctx.arc(0, 0, p.size, 0, Math.PI * 2);
+                        ctx.fillStyle = `rgba(74, 222, 128, ${p.opacity})`;
+                        ctx.shadowBlur = 8;
+                        ctx.shadowColor = '#22c55e';
+                        ctx.fill();
+                    }
+                    ctx.restore();
+                });
+                requestAnimationFrame(animate);
+            }
+            animate();
+        }
+
+        window.onload = function() {
+            renderProducts();
+            renderRecentPurchases();
+            renderFAQ();
+            initCanvas();
+        };
+    </script>
 </body>
 </html>
